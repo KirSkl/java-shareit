@@ -21,7 +21,20 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFoundException(RuntimeException e) {
+    public Map<String, String> handleNotFoundException(NotFoundException e) {
         return Map.of("error:", "Не найдено", "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleNumberFormatException(NumberFormatException e) {
+        return Map.of("error", "ID должен быть указан в числовом формате",
+                "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationIDException(ValidationIdException e) {
+        return Map.of("error", "Неверный ID", "errorMessage", e.getMessage());
     }
 }
