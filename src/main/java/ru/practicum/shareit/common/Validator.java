@@ -52,6 +52,10 @@ public class Validator {
         }
     }
 
+    public void checkIsUserExists(Long id) {
+        userStorage.getUser(id);
+    }
+
     private void validateDuplicateEmail(List<User> users, User user) {
         if (users.stream().anyMatch(
                 u -> u.getEmail().equals(user.getEmail()))) {
