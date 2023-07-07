@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.model;
 
 import lombok.Data;
 
@@ -10,9 +10,10 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 public class User {
-    private long id;
+    private Long id;
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
     @Email(message = "Некорректный email")
+    @NotBlank
     private String email;
 }

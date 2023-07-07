@@ -5,12 +5,11 @@ import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-
+// разобраться с конструктором
 @Data
 @AllArgsConstructor
 public class UserDto {
-
-    private long id;
+    private Long id;
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
     @Email(message = "Некорректный email")

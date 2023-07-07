@@ -1,39 +1,47 @@
 package ru.practicum.shareit.user;
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 
-import java.util.HashMap;
+import javax.validation.Valid;
+import java.util.List;
 
+// добавить валидацию, разобраться с хранилищем, а так же с dto - посмотреть в тестах, а так же добавить логи
 @RestController
 @RequestMapping(path = "/users")
+@AllArgsConstructor
 public class UserController {
-    HashMap<Long, User> users = new HashMap<>();
+    UserService userService;
+    Validator validator;
+
+    @GetMapping
+    public List<UserDto> getAllUsers() {
+        return userService.getAll();
+    }
+
+    @GetMapping("/{userId}")
+    public UserDto getUser(@PathVariable Long userId) {
+        return userService.getUser(userId);
+    }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        users.put(user.getId(), user);
-        return user;
+    public UserDto createUser(@Valid @RequestBody User user) {
+        validator.validateDuplicateEmailWhenCreate(user);
+        return userService.createUser(user);
     }
 
-    @PutMapping
-    public User updateUser(@RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            return user;
-        } else {
-            throw new NotFoundException("Пользователь с таким ID не найден");
-        }
+    @PatchMapping("/{userId}")
+    public UserDto updateUser(@PathVariable Long userId, @RequestBody User user) {
+        validator.validateDuplicateEmailWhenUpdate(userId, user);
+        return userService.updateUser(userId, user);
     }
 
-    @DeleteMapping({"/id"})
-    public void deleteUser(@PathVariable(name = "id") long id) {
-        if (users.containsKey(id)) {
-            users.remove(id);
-        } else {
-            throw new NotFoundException("Пользователь с таким ID не найден");
-        }
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 
 }
