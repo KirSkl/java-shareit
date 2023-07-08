@@ -37,4 +37,10 @@ public class ExceptionHandlerController {
     public Map<String, String> handleValidationIDException(ValidationIdException e) {
         return Map.of("error", "Неверный ID", "errorMessage", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleNotOwnerException(NotOwnerException e) {
+        return Map.of("error", "У вещи другой владелец");
+    }
 }

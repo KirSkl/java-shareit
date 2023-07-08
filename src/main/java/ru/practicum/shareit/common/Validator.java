@@ -53,6 +53,7 @@ public class Validator {
     }
 
     public void checkIsUserExists(Long id) {
+        log.info("Проверка наличия пользователя...");
         userStorage.getUser(id);
     }
 

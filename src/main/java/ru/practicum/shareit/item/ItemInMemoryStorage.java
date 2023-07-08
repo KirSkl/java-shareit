@@ -3,9 +3,15 @@ package ru.practicum.shareit.item;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.NotOwnerException;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Data
@@ -25,6 +31,9 @@ public class ItemInMemoryStorage implements ItemStorage {
         if (!items.containsKey(item.getId())) {
             throw new NotFoundException(String.format("Вещь с Id = %s не найдена", item.getId()));
         }
+        if(!items.get(item.getId()).getOwner().equals(item.getOwner())) {
+            throw new NotOwnerException("Редактировать данные может только владелец вещи");
+        }
         final var oldItem = items.get(item.getId());
         if (item.getName() != null) {
             oldItem.setName(item.getName());
@@ -36,6 +45,33 @@ public class ItemInMemoryStorage implements ItemStorage {
             oldItem.setAvailable(item.getAvailable());
         }
         return items.get(item.getId());
+    }
+
+    @Override
+    public Item showItemInfo(Long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException(String.format("Вещь с Id = %s не найдена", itemId));
+        }
+        return items.get(itemId);
+    }
+
+    @Override
+    public List<Item> findAllMyItems(Long userId) {
+        return items.values().stream().filter(item -> item.getOwner().equals(userId)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Item> search(String text) {
+        if(text.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String searchText = text.toLowerCase();
+       /* return items.values().stream().filter(item -> item.getName().toLowerCase().contains(searchText) ||
+                item.getDescription().toLowerCase().contains(searchText)).filter(item -> item.getAvailable().equals(true)).
+                collect(Collectors.toList());*/
+        return items.values().stream().filter(item -> item.getName().toLowerCase().contains(searchText) ||
+                        item.getDescription().toLowerCase().contains(searchText) && item.getAvailable().equals(true)).
+                collect(Collectors.toList());
     }
 
     private long itemGenerateId() {
