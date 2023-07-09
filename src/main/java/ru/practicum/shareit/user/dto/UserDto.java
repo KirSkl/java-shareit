@@ -5,7 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-// разобраться с конструктором
+
 @Data
 @AllArgsConstructor
 public class UserDto {

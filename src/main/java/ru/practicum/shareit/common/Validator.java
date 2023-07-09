@@ -44,7 +44,7 @@ public class Validator {
         }
     }
 
-    public  void validateId(Long id) {
+    public void validateId(Long id) {
         log.info("Проверка id...");
         if (id < 1) {
             log.info("Ошибочный запрос - такой ID не может существовать");

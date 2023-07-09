@@ -19,7 +19,7 @@ public class ItemController {
     private Validator validator;
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader ("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info(String.format("Получен запрос POST /items на добавление вещи с названием %s", itemDto.getName()));
         validator.validateId(userId);
         validator.checkIsUserExists(userId);
@@ -27,7 +27,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto editItem(@RequestHeader ("X-Sharer-User-Id") Long userId,
+    public ItemDto editItem(@RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
         log.info(String.format("Получен запрос PATCH /items/itemId=%s на редактирование данных вещи с названием %s",
                 userId, itemDto.getName()));
@@ -56,7 +56,7 @@ public class ItemController {
     public List<ItemDto> search(@RequestParam String text) {
         log.info(String.format(
                 "Получен запрос GET /items/search на поиск вещей, соодержащих в названии или описании %s", text));
-         return itemService.search(text);
+        return itemService.search(text);
     }
 
 }
