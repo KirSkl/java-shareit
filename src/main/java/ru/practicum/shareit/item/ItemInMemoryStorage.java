@@ -4,10 +4,8 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.NotOwnerException;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +29,7 @@ public class ItemInMemoryStorage implements ItemStorage {
         if (!items.containsKey(item.getId())) {
             throw new NotFoundException(String.format("Вещь с Id = %s не найдена", item.getId()));
         }
-        if(!items.get(item.getId()).getOwner().equals(item.getOwner())) {
+        if (!items.get(item.getId()).getOwner().equals(item.getOwner())) {
             throw new NotOwnerException("Редактировать данные может только владелец вещи");
         }
         final var oldItem = items.get(item.getId());
@@ -62,13 +60,10 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public List<Item> search(String text) {
-        if(text.isEmpty()) {
+        if (text.isEmpty()) {
             return new ArrayList<>();
         }
         String searchText = text.toLowerCase();
-       /* return items.values().stream().filter(item -> item.getName().toLowerCase().contains(searchText) ||
-                item.getDescription().toLowerCase().contains(searchText)).filter(item -> item.getAvailable().equals(true)).
-                collect(Collectors.toList());*/
         return items.values().stream().filter(item -> item.getName().toLowerCase().contains(searchText) ||
                         item.getDescription().toLowerCase().contains(searchText) && item.getAvailable().equals(true)).
                 collect(Collectors.toList());

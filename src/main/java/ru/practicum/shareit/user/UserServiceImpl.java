@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAll() {
         final var usersDto = new ArrayList<UserDto>();
-        userStorage.getAll().stream().forEach(u -> usersDto.add(UserMapper.toUserDto(u)));
+        userStorage.getAll().forEach(u -> usersDto.add(UserMapper.toUserDto(u)));
         return usersDto;
     }
 
