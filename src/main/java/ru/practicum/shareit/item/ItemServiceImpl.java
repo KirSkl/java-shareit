@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -31,15 +31,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAllMyItems(Long userId) {
-        final var itemsDto = new ArrayList<ItemDto>();
-        itemStorage.findAllMyItems(userId).forEach(item -> itemsDto.add(ItemMapper.toItemDto(item)));
-        return itemsDto;
+        return itemStorage.findAllMyItems(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
     public List<ItemDto> search(String text) {
-        final var searchResult = new ArrayList<ItemDto>();
-        itemStorage.search(text).forEach(item -> searchResult.add(ItemMapper.toItemDto(item)));
-        return searchResult;
+        return itemStorage.search(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 }

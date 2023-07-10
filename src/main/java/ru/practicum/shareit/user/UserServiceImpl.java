@@ -6,8 +6,8 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -16,9 +16,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        final var usersDto = new ArrayList<UserDto>();
-        userStorage.getAll().forEach(u -> usersDto.add(UserMapper.toUserDto(u)));
-        return usersDto;
+        return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
