@@ -21,27 +21,20 @@ public class Validator {
     private UserStorage userStorage;
 
     public void validateDuplicateEmailWhenUpdate(Long id, User user) {
-        if (user.getEmail() != null) {
+        if (user.getEmail() == null) {
+            return;
+        }
             log.info("Проверка email...");
             final var users = userStorage.getAll().stream()
                     .filter(u -> !Objects.equals(u.getId(), id))
                     .collect(Collectors.toList());
-            if (users.isEmpty()) {
-                return;
-            }
             validateDuplicateEmail(users, user);
         }
-    }
 
     public void validateDuplicateEmailWhenCreate(User user) {
-        if (user.getEmail() != null) {
-            log.info("Проверка email...");
-            final var users = userStorage.getAll();
-            if (users.isEmpty()) {
-                return;
-            }
-            validateDuplicateEmail(users, user);
-        }
+        log.info("Проверка email...");
+        final var users = userStorage.getAll();
+        validateDuplicateEmail(users, user);
     }
 
     public void validateId(Long id) {
@@ -59,7 +52,7 @@ public class Validator {
 
     private void validateDuplicateEmail(List<User> users, User user) {
         if (users.stream().anyMatch(
-                u -> u.getEmail().equals(user.getEmail()))) {
+                u -> u.getEmail().equalsIgnoreCase(user.getEmail()))) {
             log.info("Указан уже используемый email");
             throw new EmailAlreadyIsUsed(
                     String.format("Данный адрес %s уже используется", user.getEmail()));
