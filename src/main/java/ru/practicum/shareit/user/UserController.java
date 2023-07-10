@@ -15,8 +15,8 @@ import java.util.List;
 @RequestMapping(path = "/users")
 @AllArgsConstructor
 public class UserController {
-    UserService userService;
-    Validator validator;
+    private UserService userService;
+    private Validator validator;
 
     @GetMapping
     public List<UserDto> getAllUsers() {
