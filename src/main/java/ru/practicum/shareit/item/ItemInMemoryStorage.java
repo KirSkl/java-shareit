@@ -63,7 +63,7 @@ public class ItemInMemoryStorage implements ItemStorage {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        String searchText = text.toLowerCase();
+        String searchText = text.toLowerCase().strip();
         return items.values().stream().filter(item -> item.getName().toLowerCase().contains(searchText) ||
                         item.getDescription().toLowerCase().contains(searchText) && item.getAvailable().equals(true))
                         .collect(Collectors.toList());
