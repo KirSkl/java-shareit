@@ -29,38 +29,36 @@ public class UserInMemoryStorage implements UserStorage {
 
     @Override
     public User updateUser(Long id, User user) {
-        if (users.containsKey(id)) {
-            final var oldUser = users.get(id);
-            if (user.getName() != null) {
-                oldUser.setName(user.getName());
-            }
-            if (user.getEmail() != null) {
-                oldUser.setEmail(user.getEmail());
-            }
-            return oldUser;
-        } else {
-            throw new NotFoundException("Пользователь с таким ID не найден");
+        checkUserExists(id);
+        final var oldUser = users.get(id);
+        if (user.getName() != null) {
+            oldUser.setName(user.getName());
         }
+        if (user.getEmail() != null) {
+            oldUser.setEmail(user.getEmail());
+        }
+        return oldUser;
     }
 
     @Override
     public void deleteUser(Long id) {
-        if (users.containsKey(id)) {
-            users.remove(id);
-        } else {
-            throw new NotFoundException("Пользователь с таким ID не найден");
-        }
+        checkUserExists(id);
+        users.remove(id);
     }
 
     @Override
     public User getUser(Long userId) {
-        if (!users.containsKey(userId)) {
-            throw new NotFoundException(String.format("Пользователь с Id = %s не найден", userId));
-        }
+        checkUserExists(userId);
         return users.get(userId);
     }
 
     private long userGenerateId() {
         return ++id;
+    }
+
+    private void checkUserExists(Long userId) {
+        if (!users.containsKey(userId)) {
+            throw new NotFoundException(String.format("Пользователь с Id = %s не найден", userId));
+        }
     }
 }

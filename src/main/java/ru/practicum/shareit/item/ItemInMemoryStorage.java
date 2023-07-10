@@ -26,9 +26,7 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item editItem(Item item) {
-        if (!items.containsKey(item.getId())) {
-            throw new NotFoundException(String.format("Вещь с Id = %s не найдена", item.getId()));
-        }
+        checkItemExists(item.getId());
         if (!items.get(item.getId()).getOwner().equals(item.getOwner())) {
             throw new NotOwnerException("Редактировать данные может только владелец вещи");
         }
@@ -47,9 +45,7 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public Item showItemInfo(Long itemId) {
-        if (!items.containsKey(itemId)) {
-            throw new NotFoundException(String.format("Вещь с Id = %s не найдена", itemId));
-        }
+        checkItemExists(itemId);
         return items.get(itemId);
     }
 
@@ -71,5 +67,11 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     private long itemGenerateId() {
         return ++id;
+    }
+
+    private void checkItemExists(Long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException(String.format("Вещь с Id = %s не найдена", itemId));
+        }
     }
 }
