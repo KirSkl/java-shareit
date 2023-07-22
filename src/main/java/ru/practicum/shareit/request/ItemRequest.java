@@ -4,5 +4,7 @@ import lombok.Data;
 
 @Data
 public class ItemRequest {
-    long id;
+    private Long id;
+    private String description;
+    private Long requestorId;
 }
