@@ -34,15 +34,14 @@ public class UserController {
     @PostMapping
     public UserDto createUser(@Valid @RequestBody User user) {
         log.info("Получен запрос \"POST /users\" на создание пользователя");
-        validator.validateDuplicateEmailWhenCreate(user);
         return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable Long userId, @RequestBody User user) {
         log.info(String.format("Получен запрос \"PATCH /users/userId=%s\" на обновление данных пользователя", userId));
-        validator.validateId(userId);
-        validator.validateDuplicateEmailWhenUpdate(userId, user);
+        validator.validateId(userId);/*
+        validator.validateDuplicateEmailWhenUpdate(userId, user);*/
         return userService.updateUser(userId, user);
     }
 
