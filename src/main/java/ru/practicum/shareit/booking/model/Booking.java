@@ -1,10 +1,12 @@
 package ru.practicum.shareit.booking.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.Instant;
 @Data
+@AllArgsConstructor
 @Entity
 @Table(name = "bookings")
 public class Booking {
