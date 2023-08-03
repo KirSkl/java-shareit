@@ -27,7 +27,7 @@ public class ItemInMemoryStorage implements ItemStorage {
     @Override
     public Item editItem(Item item) {
         checkItemExists(item.getId());
-        if (!items.get(item.getId()).getOwner().equals(item.getOwner())) {
+        if (!items.get(item.getId()).getOwnerId().equals(item.getOwnerId())) {
             throw new NotOwnerException("Редактировать данные может только владелец вещи");
         }
         final var oldItem = items.get(item.getId());
@@ -37,8 +37,8 @@ public class ItemInMemoryStorage implements ItemStorage {
         if (item.getDescription() != null) {
             oldItem.setDescription(item.getDescription());
         }
-        if (item.getAvailable() != null) {
-            oldItem.setAvailable(item.getAvailable());
+        if (item.getIsAvailable() != null) {
+            oldItem.setIsAvailable(item.getIsAvailable());
         }
         return items.get(item.getId());
     }
@@ -51,7 +51,7 @@ public class ItemInMemoryStorage implements ItemStorage {
 
     @Override
     public List<Item> findAllMyItems(Long userId) {
-        return items.values().stream().filter(item -> item.getOwner().equals(userId)).collect(Collectors.toList());
+        return items.values().stream().filter(item -> item.getOwnerId().equals(userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ItemInMemoryStorage implements ItemStorage {
         }
         String searchText = text.toLowerCase().strip();
         return items.values().stream().filter(item -> item.getName().toLowerCase().contains(searchText) ||
-                        item.getDescription().toLowerCase().contains(searchText) && item.getAvailable().equals(true))
+                        item.getDescription().toLowerCase().contains(searchText) && item.getIsAvailable().equals(true))
                         .collect(Collectors.toList());
     }
 
