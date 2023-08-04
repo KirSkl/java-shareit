@@ -5,6 +5,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @Entity
@@ -14,9 +16,9 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "start_date", nullable = false)
-    private Instant startDate;
+    private LocalDateTime startDate;
     @Column(name = "end_date", nullable = false)
-    private Instant endDate;
+    private LocalDateTime endDate;
     @Column(name = "item_id", nullable = false)
     private Long itemId;
     @Column(name = "booker_id", nullable = false)

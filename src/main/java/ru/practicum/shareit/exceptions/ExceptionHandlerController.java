@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 @ResponseBody
@@ -42,5 +43,25 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> handleNotOwnerException(NotOwnerException e) {
         return Map.of("error", "У вещи другой владелец");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNoSuchElementException(NoSuchElementException e) {
+        return Map.of("error:", "Не найдено", "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleItemNotAvailable(ItemNotAvailable e) {
+        return Map.of("error", "Данная вещь не доступна для бронирования",
+                "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInvalidBookingDates(InvalidBookingDates e) {
+        return Map.of("error", "Указаны неверные даты бронирования",
+                "errorMessage", e.getMessage());
     }
 }

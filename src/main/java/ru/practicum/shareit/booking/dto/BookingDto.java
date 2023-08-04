@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Data
@@ -14,7 +15,9 @@ public class BookingDto {
     @NotNull
     private Long itemId;
     @FutureOrPresent
-    private Instant startDate;
+    @NotNull
+    private LocalDateTime start;
     @FutureOrPresent
-    private Instant endDate;
+    @NotNull
+    private LocalDateTime end;
 }

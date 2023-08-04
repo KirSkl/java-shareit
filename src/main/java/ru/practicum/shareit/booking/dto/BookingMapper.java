@@ -18,8 +18,8 @@ public final class BookingMapper {
     public static Booking toBooking(BookingDto bookingDto, Long bookerId, Long ownerId) {
         return new Booking(
                 null,
-                bookingDto.getStartDate(),
-                bookingDto.getEndDate(),
+                bookingDto.getStart(),
+                bookingDto.getEnd(),
                 bookingDto.getItemId(),
                 bookerId,
                 BookingStatus.WAITING
