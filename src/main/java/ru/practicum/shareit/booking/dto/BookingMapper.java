@@ -3,25 +3,39 @@ package ru.practicum.shareit.booking.dto;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 @UtilityClass
 public final class BookingMapper {
 
-    public static BookingDto toBookingDto(Booking booking) {
-        return new BookingDto(
-                booking.getBookerId(),
+    public static BookingDtoResponse toBookingDtoResponse(Booking booking) {
+        return new BookingDtoResponse(
+                booking.getId(),
                 booking.getStartDate(),
-                booking.getEndDate()
+                booking.getEndDate(),
+                booking.getStatus(),
+                booking.getBooker(),
+                booking.getItem()
         );
     }
 
-    public static Booking toBooking(BookingDto bookingDto, Long bookerId, Long ownerId) {
+    public static BookingDtoPatchResponse toBookingDtoPatchResponse(Booking booking) {
+        return new BookingDtoPatchResponse(
+                booking.getId(),
+                booking.getStatus(),
+                booking.getBooker(),
+                booking.getItem()
+        );
+    }
+
+    public static Booking toBooking(BookingDtoRequest bookingDtoRequest, User booker, Item item) {
         return new Booking(
                 null,
-                bookingDto.getStart(),
-                bookingDto.getEnd(),
-                bookingDto.getItemId(),
-                bookerId,
+                bookingDtoRequest.getStart(),
+                bookingDtoRequest.getEnd(),
+                item,
+                booker,
                 BookingStatus.WAITING
         );
     }
