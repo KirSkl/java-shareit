@@ -41,8 +41,8 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Map<String, String> handleNotOwnerException(NotOwnerException e) {
-        return Map.of("error", "У вещи другой владелец");
+    public Map<String, String> handleNotAccessException(NotAccessException e) {
+        return Map.of("error", "Нет прав доступа");
     }
 
     @ExceptionHandler

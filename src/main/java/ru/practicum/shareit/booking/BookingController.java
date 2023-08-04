@@ -38,4 +38,14 @@ public class BookingController {
         validator.validateId(bookingId);
         return bookingService.approvedBooking(bookingId, approved, userId);
     }
+
+    @GetMapping("/{bookingId}")
+    public BookingDtoResponse getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @PathVariable Long bookingId) {
+        log.info(String.format("Получен запрос на получение информации о бронировании id = %s " +
+                "от пользователя id = %s", bookingId, userId));
+        validator.validateId(userId);
+        validator.validateId(bookingId);
+        return bookingService.getBooking(userId, bookingId);
+    }
 }

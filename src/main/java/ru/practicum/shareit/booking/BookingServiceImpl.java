@@ -2,13 +2,12 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingDtoPatchResponse;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ItemNotAvailable;
-import ru.practicum.shareit.exceptions.NotOwnerException;
+import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -36,12 +35,22 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoResponse approvedBooking(Long bookingId, Boolean approved, Long userId) {
         var booking = bookingRepository.findById(bookingId).get();
         if (!booking.getItem().getOwnerId().equals(userId)) {
-            throw new NotOwnerException("Ответить на запрос аренды может только владелец вещи");
+            throw new NotAccessException("Ответить на запрос аренды может только владелец вещи");
         }
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
         } else {
             booking.setStatus(BookingStatus.REJECTED);
+        }
+        return BookingMapper.toBookingDtoResponse(booking);
+    }
+
+    @Override
+    public BookingDtoResponse getBooking(Long userId, Long bookingId) {
+        var booking = bookingRepository.findById(bookingId).get();
+        if (!userId.equals(booking.getBooker().getId()) &&
+                !userId.equals(booking.getItem().getOwnerId())) {
+            throw new NotAccessException("Информация о бронировании доступна только владельцу или арендатору");
         }
         return BookingMapper.toBookingDtoResponse(booking);
     }

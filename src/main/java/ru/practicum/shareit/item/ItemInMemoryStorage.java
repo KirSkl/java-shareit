@@ -3,7 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.NotOwnerException;
+import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class ItemInMemoryStorage implements ItemStorage {
     public Item editItem(Item item) {
         checkItemExists(item.getId());
         if (!items.get(item.getId()).getOwnerId().equals(item.getOwnerId())) {
-            throw new NotOwnerException("Редактировать данные может только владелец вещи");
+            throw new NotAccessException("Редактировать данные может только владелец вещи");
         }
         final var oldItem = items.get(item.getId());
         if (item.getName() != null) {
