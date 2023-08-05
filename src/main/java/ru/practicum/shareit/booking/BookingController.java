@@ -7,9 +7,11 @@ import ru.practicum.shareit.booking.dto.BookingDtoPatchResponse;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStates;
 import ru.practicum.shareit.common.Validator;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -47,5 +49,13 @@ public class BookingController {
         validator.validateId(userId);
         validator.validateId(bookingId);
         return bookingService.getBooking(userId, bookingId);
+    }
+
+    @GetMapping
+    public List<BookingDtoResponse> getAllBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                               @RequestParam(defaultValue = "ALL") BookingStates bookingStates) {
+         log.info(String.format("Получен запрос на получение всех бронирований пользователя с id = %s", userId));
+         validator.validateId(userId);
+         return bookingService.getAllBookings(userId, bookingStates);
     }
 }
