@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStates;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ItemNotAvailable;
@@ -13,6 +14,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UnsupportedBookingStateException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,9 +30,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoResponse createBooking(Long userId, BookingDtoRequest bookingDtoRequest) {
-        checkUserExists(userId);
-        var item = itemRepository.findById(bookingDtoRequest.getItemId()).get();
-        var booker = userRepository.findById(userId).get();
+        var booker = checkUserExistsAndGet(userId);
+        var item = itemRepository.findById(bookingDtoRequest.getItemId()).orElseThrow(()
+                        -> new NotFoundException("Вещь не найдена"));
         if (!item.getIsAvailable()) {
             throw new ItemNotAvailable(String.format("Вещь с id = %s не доступна для бронирования",
                     bookingDtoRequest.getItemId()));
@@ -41,8 +43,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoResponse approvedBooking(Long bookingId, Boolean approved, Long userId) {
-        checkUserExists(userId);
-        var booking = bookingRepository.findById(bookingId).get();
+        checkUserExistsAndGet(userId);
+        var booking = checkBookingExistsAndGet(bookingId);
         if (!booking.getItem().getOwnerId().equals(userId)) {
             throw new NotAccessException("Ответить на запрос аренды может только владелец вещи");
         }
@@ -56,8 +58,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoResponse getBooking(Long userId, Long bookingId) {
-        checkUserExists(userId);
-        var booking = bookingRepository.findById(bookingId).get();
+        checkUserExistsAndGet(userId);
+        var booking = checkBookingExistsAndGet(bookingId);
         if (!userId.equals(booking.getBooker().getId()) &&
                 !userId.equals(booking.getItem().getOwnerId())) {
             throw new NotAccessException("Информация о бронировании доступна только владельцу или арендатору");
@@ -67,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDtoResponse> getAllBookings(Long userId, String state) {
-        checkUserExists(userId);
+        checkUserExistsAndGet(userId);
         try  {
         switch (BookingStates.valueOf(state)) {
             case ALL:
@@ -95,7 +97,42 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void checkUserExists(Long userId) {
-        userRepository.findById(userId).get();
+    @Override
+    public List<BookingDtoResponse> getAllItemBookings(Long userId, String state) {
+        checkUserExistsAndGet(userId);
+        try  {
+            switch (BookingStates.valueOf(state)) {
+                case ALL:
+                    return bookingRepository.findAllByItemOwnerIdOrderByStartDateDesc(userId).stream()
+                            .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
+                case CURRENT:
+                    return bookingRepository.findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                                    userId, LocalDateTime.now(), LocalDateTime.now()).stream().
+                            map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
+                case PAST:
+                    return bookingRepository.findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(userId,
+                                    LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                            .collect(Collectors.toList());
+                case FUTURE:
+                    return bookingRepository.findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(userId,
+                                    LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                            .collect(Collectors.toList());
+                default:
+                    return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId,
+                                    BookingStates.valueOf(state)).stream().map(BookingMapper::toBookingDtoResponse)
+                            .collect(Collectors.toList());
+            }
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedBookingStateException(String.format("Указан неподдерживаемый статус = %s", state));
+        }
+    }
+
+    private User checkUserExistsAndGet(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь на найден"));
+    }
+
+    private Booking checkBookingExistsAndGet(Long bookingId) {
+        return bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(
+                "Бронирование не найдено"));
     }
 }

@@ -59,4 +59,12 @@ public class BookingController {
          validator.validateId(userId);
          return bookingService.getAllBookings(userId, state);
     }
+
+    @GetMapping("/owner")
+    public List<BookingDtoResponse> getAllItemBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                   @RequestParam(defaultValue = "ALL") String state) {
+        log.info(String.format("Получен запрос на получение всех бронирований вещей пользователя с id = %s", userId));
+        validator.validateId(userId);
+        return bookingService.getAllItemBookings(userId, state);
+    }
 }
