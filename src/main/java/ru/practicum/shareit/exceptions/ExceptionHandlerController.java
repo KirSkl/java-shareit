@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -62,6 +63,13 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleInvalidBookingDates(InvalidBookingDates e) {
         return Map.of("error", "Указаны неверные даты бронирования",
+                "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleUnsupportedBookingStateException(UnsupportedBookingStateException e) {
+        return Map.of("error", "Unknown state: UNSUPPORTED_STATUS",
                 "errorMessage", e.getMessage());
     }
 }

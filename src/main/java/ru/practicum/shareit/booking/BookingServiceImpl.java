@@ -10,10 +10,11 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ItemNotAvailable;
 import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.UnsupportedBookingStateException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,10 +66,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getAllBookings(Long userId, BookingStates bookingStates) {
+    public List<BookingDtoResponse> getAllBookings(Long userId, String state) {
         checkUserExists(userId);
-        return bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId).stream()
-                .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
+        try  {
+        switch (BookingStates.valueOf(state)) {
+            case ALL:
+                return bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId).stream()
+                        .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
+            case CURRENT:
+                return bookingRepository.findAllByBookerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                        userId, LocalDateTime.now(), LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                        .collect(Collectors.toList());
+            case PAST:
+                return bookingRepository.findAllByBookerIdAndEndDateBeforeOrderByStartDateDesc(
+                        userId, LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                        .collect(Collectors.toList());
+            case FUTURE:
+                return bookingRepository.findAllByBookerIdAndStartDateAfterOrderByStartDateDesc(
+                        userId, LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                        .collect(Collectors.toList());
+            default:
+                return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId,
+                                BookingStates.valueOf(state)).stream()
+                        .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
+        }
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedBookingStateException(String.format("Указан неподдерживаемый статус = %s", state));
+        }
     }
 
     private void checkUserExists(Long userId) {

@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStates;
 import ru.practicum.shareit.common.Validator;
+import ru.practicum.shareit.exceptions.UnsupportedBookingStateException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -53,9 +54,9 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDtoResponse> getAllBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                               @RequestParam(defaultValue = "ALL") BookingStates bookingStates) {
+                                               @RequestParam(defaultValue = "ALL") String state) {
          log.info(String.format("Получен запрос на получение всех бронирований пользователя с id = %s", userId));
          validator.validateId(userId);
-         return bookingService.getAllBookings(userId, bookingStates);
+         return bookingService.getAllBookings(userId, state);
     }
 }
