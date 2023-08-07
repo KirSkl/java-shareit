@@ -41,7 +41,7 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.NOT_FOUND) //был 403, но в тестах требуется именно 404
     public Map<String, String> handleNotAccessException(NotAccessException e) {
         return Map.of("error", "Нет прав доступа");
     }
@@ -70,6 +70,13 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleUnsupportedBookingStateException(UnsupportedBookingStateException e) {
         return Map.of("error", "Unknown state: UNSUPPORTED_STATUS",
+                "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleBookingAlreadyApprovedException(BookingAlreadyApprovedException e) {
+        return Map.of("error", "Бронирование уже одобрено",
                 "errorMessage", e.getMessage());
     }
 }

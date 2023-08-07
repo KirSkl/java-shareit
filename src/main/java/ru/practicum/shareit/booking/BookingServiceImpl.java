@@ -8,10 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStates;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.exceptions.ItemNotAvailable;
-import ru.practicum.shareit.exceptions.NotAccessException;
-import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.UnsupportedBookingStateException;
+import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -37,6 +34,9 @@ public class BookingServiceImpl implements BookingService {
             throw new ItemNotAvailable(String.format("Вещь с id = %s не доступна для бронирования",
                     bookingDtoRequest.getItemId()));
         }
+        if (item.getOwnerId().equals(userId)) {
+            throw new NotAccessException("Нельзя взять в аренду свою вещь");
+        }
         return BookingMapper.toBookingDtoResponse(bookingRepository.save(
                 BookingMapper.toBooking(bookingDtoRequest, booker, item)));
     }
@@ -47,6 +47,9 @@ public class BookingServiceImpl implements BookingService {
         var booking = checkBookingExistsAndGet(bookingId);
         if (!booking.getItem().getOwnerId().equals(userId)) {
             throw new NotAccessException("Ответить на запрос аренды может только владелец вещи");
+        }
+        if(booking.getStatus().equals(BookingStatus.APPROVED)) {
+            throw new BookingAlreadyApprovedException("Нельзя изменить статус после одобрения");
         }
         if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
@@ -62,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
         var booking = checkBookingExistsAndGet(bookingId);
         if (!userId.equals(booking.getBooker().getId()) &&
                 !userId.equals(booking.getItem().getOwnerId())) {
-            throw new NotAccessException("Информация о бронировании доступна только владельцу или арендатору");
+            throw new NotFoundException("Информация о бронировании доступна только владельцу или арендатору");
         }
         return BookingMapper.toBookingDtoResponse(booking);
     }
