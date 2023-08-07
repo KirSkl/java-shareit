@@ -20,12 +20,10 @@ public final class BookingMapper {
         );
     }
 
-    public static BookingDtoPatchResponse toBookingDtoPatchResponse(Booking booking) {
-        return new BookingDtoPatchResponse(
+    public static BookingItemDto toBookingItemDto(Booking booking) {
+        return new BookingItemDto(
                 booking.getId(),
-                booking.getStatus(),
-                booking.getBooker(),
-                booking.getItem()
+                booking.getBooker().getId()
         );
     }
 

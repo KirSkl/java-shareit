@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoOwner;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -38,10 +39,11 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto showItemInfo(@PathVariable Long itemId) {
+    public ItemDto showItemInfo(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info(String.format("Получен запрос GET /items/itemId=%s на получение информации о вещи", itemId));
         validator.validateId(itemId);
-        return itemService.showItemInfo(itemId);
+        validator.validateId(userId);
+        return itemService.showItemInfo(itemId, userId);
     }
 
     @GetMapping

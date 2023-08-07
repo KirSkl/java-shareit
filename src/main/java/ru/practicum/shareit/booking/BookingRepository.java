@@ -3,10 +3,13 @@ package ru.practicum.shareit.booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStates;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
@@ -19,7 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBookerIdAndStartDateAfterOrderByStartDateDesc(Long bookerId, LocalDateTime now);
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(Long bookerId, BookingStates state);
+    List<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(Long bookerId, BookingStatus state);
 
     List<Booking> findAllByItemOwnerIdOrderByStartDateDesc(Long bookerId);
 
@@ -27,10 +30,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             Long bookerId, LocalDateTime now, LocalDateTime now1);
 
     List<Booking> findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(Long bookerId, LocalDateTime now);
+
     List<Booking> findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(Long bookerId, LocalDateTime now);
-    List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDateDesc(Long bookerId, BookingStates state);
 
+    Optional<Booking> findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(Long itemId,
+                      LocalDateTime now, BookingStatus bookingStatus);
 
+    Optional<Booking> findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(Long itemId,
+                     LocalDateTime now, BookingStatus bookingStatus);
 
-
+    List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDateDesc(Long userId, BookingStatus valueOf);
 }

@@ -10,7 +10,7 @@ public interface ItemService {
 
     ItemDto editItem(Long userId, Long itemId, ItemDto itemDto);
 
-    ItemDto showItemInfo(Long itemId);
+    ItemDto showItemInfo(Long itemId, Long userId);
 
     List<ItemDto> findAllMyItems(Long userId);
 

@@ -2,11 +2,15 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private ItemRepository itemRepository;
+    private BookingRepository bookingRepository;
 
     @Override
     public ItemDto addItem(Long userId, ItemDto itemDto) {
@@ -42,14 +47,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto showItemInfo(Long itemId) {
-        return ItemMapper.toItemDto(itemRepository.findById(itemId).orElseThrow(() ->
-                new NotFoundException("Вещь с id = %s не найдена")));
+    public ItemDto showItemInfo(Long itemId, Long userId) {
+        var item = itemRepository.findById(itemId).orElseThrow(() ->
+                new NotFoundException("Вещь с id = %s не найдена"));
+        if (item.getOwnerId().equals(userId)) {
+            return addBookings(ItemMapper.toItemDto(item), userId);
+        } else {
+            return ItemMapper.toItemDto(item);
+        }
     }
 
     @Override
     public List<ItemDto> findAllMyItems(Long userId) {
-        return itemRepository.findItemsByOwnerId(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return itemRepository.findItemsByOwnerIdOrderById(userId).stream().
+                map(ItemMapper::toItemDto).map(itemDto -> addBookings(itemDto, userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -59,5 +70,17 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemRepository.search(text)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    }
+
+    private ItemDto addBookings(ItemDto itemDto, Long userId) {
+        var lastBooking = bookingRepository.
+                findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(itemDto.getId(),
+                        LocalDateTime.now(), BookingStatus.REJECTED);
+        lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toBookingItemDto(lastBooking.get())));
+        var nextBooking = bookingRepository.
+                findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(itemDto.getId(),
+                        LocalDateTime.now(), BookingStatus.REJECTED);
+        nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toBookingItemDto(nextBooking.get())));
+        return itemDto;
     }
 }

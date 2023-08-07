@@ -92,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
                         .collect(Collectors.toList());
             default:
                 return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId,
-                                BookingStates.valueOf(state)).stream()
+                                BookingStatus.valueOf(state)).stream()
                         .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
         }
         } catch (IllegalArgumentException e) {
@@ -121,8 +121,8 @@ public class BookingServiceImpl implements BookingService {
                                     LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
                 default:
-                    return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId,
-                                    BookingStates.valueOf(state)).stream().map(BookingMapper::toBookingDtoResponse)
+                    return bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(userId,
+                                    BookingStatus.valueOf(state)).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
             }
         } catch (IllegalArgumentException e) {

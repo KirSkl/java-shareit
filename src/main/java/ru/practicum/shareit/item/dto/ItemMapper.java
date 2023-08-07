@@ -12,7 +12,21 @@ public final class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getIsAvailable(),
-                item.getRequest()
+                item.getRequest(),
+                null,
+                null
+        );
+    }
+
+    public static ItemDtoOwner toItemDtoOwner(Item item) {
+        return new ItemDtoOwner(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getIsAvailable(),
+                item.getRequest(),
+                null,
+                null
         );
     }
 
