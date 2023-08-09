@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Validator;
+import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
+import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoOwner;
 
@@ -61,4 +63,14 @@ public class ItemController {
         return itemService.search(text);
     }
 
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoResponse postComment(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @Valid @RequestBody CommentDtoRequest text) {
+        log.info(String.format(
+                "Получен запрос POST /items/userId=%s/comment на публикацию отзыва от пользователя с id = %s",
+                itemId, userId));
+        validator.validateId(itemId);
+        validator.validateId(userId);
+        return itemService.postComment(itemId, userId, text);
+    }
 }

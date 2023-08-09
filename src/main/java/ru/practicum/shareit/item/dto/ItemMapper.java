@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.List;
 
 @UtilityClass
 public final class ItemMapper {
 
-    public static ItemDto toItemDto(Item item) {
+    public static ItemDto toItemDto(Item item, List<Comment> comments) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
@@ -14,11 +17,12 @@ public final class ItemMapper {
                 item.getIsAvailable(),
                 item.getRequest(),
                 null,
-                null
+                null,
+                comments
         );
     }
 
-    public static ItemDtoOwner toItemDtoOwner(Item item) {
+   /* public static ItemDtoOwner toItemDtoOwner(Item item, List<Comment> commentsList) {*//*
         return new ItemDtoOwner(
                 item.getId(),
                 item.getName(),
@@ -26,9 +30,10 @@ public final class ItemMapper {
                 item.getIsAvailable(),
                 item.getRequest(),
                 null,
-                null
-        );
-    }
+                null,
+                commentsList
+        );*//*
+    }*/
 
     public static Item toItem(Long userId, ItemDto itemDto) {
         return new Item(
