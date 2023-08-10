@@ -53,7 +53,9 @@ public class ItemServiceImpl implements ItemService {
         if (item.getIsAvailable() != null) {
             oldItem.setIsAvailable(item.getIsAvailable());
         }
-        return ItemMapper.toItemDto(itemRepository.save(oldItem), commentRepository.findAllByItem(oldItem));
+        return ItemMapper.toItemDto(itemRepository.save(oldItem), commentRepository.findAllByItem(oldItem).stream()
+                .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -61,17 +63,23 @@ public class ItemServiceImpl implements ItemService {
         var item = itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException("Вещь с id = %s не найдена"));
         if (item.getOwnerId().equals(userId)) {
-            return addBookings(ItemMapper.toItemDto(item, commentRepository.findAllByItem(item)), userId);
+            return addBookings(ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+                    .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
+                    .collect(Collectors.toList())), userId);
         } else {
-            return ItemMapper.toItemDto(item, commentRepository.findAllByItem(item));
+            return ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+                    .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
+                    .collect(Collectors.toList()));
         }
     }
 
     @Override
     public List<ItemDto> findAllMyItems(Long userId) {
         return itemRepository.findItemsByOwnerIdOrderById(userId).stream().
-                map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item)))
-                .map(itemDto -> addBookings(itemDto, userId)).collect(Collectors.toList());
+                map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+                        .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
+                        .collect(Collectors.toList()))).map(itemDto -> addBookings(itemDto, userId))
+                        .collect(Collectors.toList());
     }
 
     @Override
@@ -80,8 +88,9 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
         return itemRepository.search(text)
-                .stream().map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item)))
-                .collect(Collectors.toList());
+                .stream().map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+                        .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
+                        .collect(Collectors.toList()))).collect(Collectors.toList());
     }
 
     @Override
