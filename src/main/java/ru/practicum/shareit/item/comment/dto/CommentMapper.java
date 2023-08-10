@@ -2,16 +2,18 @@ package ru.practicum.shareit.item.comment.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.comment.model.Comment;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 @UtilityClass
 public final class CommentMapper {
 
-    public static Comment toComment(CommentDtoRequest commentDtoRequest, Long userId, Long itemId) {
+    public static Comment toComment(CommentDtoRequest commentDtoRequest, User user, Item item) {
         return new Comment(
                 null,
                 commentDtoRequest.getText(),
-                itemId,
-                userId,
+                item,
+                user,
                 commentDtoRequest.getCreated()
         );
     }

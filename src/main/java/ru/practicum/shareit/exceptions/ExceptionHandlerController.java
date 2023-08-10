@@ -79,4 +79,11 @@ public class ExceptionHandlerController {
         return Map.of("error", "Бронирование уже одобрено",
                 "errorMessage", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleNotBookerException(NotBookerException e) {
+        return Map.of("error", "Комментарии могут оставлять только арендаторы",
+                "errorMessage", e.getMessage());
+    }
 }

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
+@Data
 public class CommentDtoResponse {
     private Long id;
     private String text;

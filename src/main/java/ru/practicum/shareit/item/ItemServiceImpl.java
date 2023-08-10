@@ -86,13 +86,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDtoResponse postComment(Long itemId, Long userId, CommentDtoRequest commentDtoRequest) {
+        var item = itemRepository.findById(itemId).orElseThrow(()
+                -> new NotFoundException("Вещь не найдена"));
+        var user = userRepository.findById(userId).orElseThrow(()
+                -> new NotFoundException("Пользователь на найден"));
         var bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndDateBeforeAndStatus(userId, itemId,
                 commentDtoRequest.getCreated(), BookingStatus.APPROVED);
         if (bookings.isEmpty()) {
             throw new NotBookerException(String.format("Пользователь с id = %s не брал в аренду вещь с id = %s",
                     userId, itemId));
         }
-        var comment = commentRepository.save(CommentMapper.toComment(commentDtoRequest, userId, itemId));
+        var comment = commentRepository.save(CommentMapper.toComment(commentDtoRequest, user, item));
         return CommentMapper.toCommentDtoResponse(
                 comment, userRepository.findById(comment.getAuthor().getId()).get().getName());
     }
