@@ -1,8 +1,8 @@
-/*DROP TABLE IF EXISTS "users" CASCADE;
+DROP TABLE IF EXISTS "users" CASCADE;
 DROP TABLE IF EXISTS "items" CASCADE;
 DROP TABLE IF EXISTS "requests";
 DROP TABLE IF EXISTS "comments";
-DROP TABLE IF EXISTS "bookings";*/ --раскомментировать, чтобы пройти тесты--
+DROP TABLE IF EXISTS "bookings"; --Оставлено, чтобы пройти тесты. Закомментировать для работы--
 
 CREATE TABLE IF NOT EXISTS users
 (
