@@ -27,7 +27,7 @@ public class Validator {
 
     public void validateBookingDto(BookingDtoRequest bookingDtoRequest) {
         log.info("Проверка дат бронирования...");
-        if(bookingDtoRequest.getStart().isAfter(bookingDtoRequest.getEnd()) ||
+        if (bookingDtoRequest.getStart().isAfter(bookingDtoRequest.getEnd()) ||
                 bookingDtoRequest.getStart().equals(bookingDtoRequest.getEnd())) {
             throw new InvalidBookingDates("Окончание бронирования должно быть после начала бронирования");
         }
