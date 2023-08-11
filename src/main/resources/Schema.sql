@@ -1,7 +1,7 @@
+DROP TABLE IF EXISTS "comments";
 DROP TABLE IF EXISTS "users" CASCADE;
 DROP TABLE IF EXISTS "items" CASCADE;
 DROP TABLE IF EXISTS "requests";
-DROP TABLE IF EXISTS "comments";
 DROP TABLE IF EXISTS "bookings"; --Оставлено, чтобы пройти тесты. Закомментировать для работы--
 
 CREATE TABLE IF NOT EXISTS users
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS comments
     author_id bigint    NOT NULL,
     created   timestamp NOT NULL,
     CONSTRAINT pk_comments PRIMARY KEY (id),
-    CONSTRAINT fk_item FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE,
+    CONSTRAINT fk_comments_item FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE,
     CONSTRAINT fk_author FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
@@ -56,7 +56,7 @@ CREATE TABLE bookings
     booker_id  bigint    NOT NULL,
     status     varchar   NOT NULL,
     CONSTRAINT pk_bookings PRIMARY KEY (id),
-    CONSTRAINT pk_item FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bookings_item FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE,
     CONSTRAINT pk_booker FOREIGN KEY (booker_id) REFERENCES users (id) ON DELETE CASCADE
 )
 
