@@ -5,16 +5,15 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.exceptions.NotBookerException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -44,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotAccessException("Редактировать данные может только владелец вещи");
         }
         final var item = ItemMapper.toItem(userId, itemDto);
-        if (item.getName() != null  && !item.getName().isBlank()) {
+        if (item.getName() != null && !item.getName().isBlank()) {
             oldItem.setName(item.getName());
         }
         if (item.getDescription() != null && !item.getDescription().isBlank()) {
@@ -79,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
                 map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                         .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                         .collect(Collectors.toList()))).map(itemDto -> addBookings(itemDto, userId))
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -99,8 +98,8 @@ public class ItemServiceImpl implements ItemService {
                 -> new NotFoundException("Вещь не найдена"));
         var user = userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("Пользователь на найден"));
-        var bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndDateBeforeAndStatus(userId, itemId,
-                commentDtoRequest.getCreated(), BookingStatus.APPROVED);
+        var bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndDateBeforeAndStatus(userId,
+                itemId, commentDtoRequest.getCreated(), BookingStatus.APPROVED);
         if (bookings.isEmpty()) {
             throw new NotBookerException(String.format("Пользователь с id = %s не брал в аренду вещь с id = %s",
                     userId, itemId));
