@@ -7,7 +7,6 @@ import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoOwner;
 
 import javax.validation.Valid;
 import java.util.List;

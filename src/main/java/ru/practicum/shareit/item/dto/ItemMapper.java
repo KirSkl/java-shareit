@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
-import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -23,19 +22,6 @@ public final class ItemMapper {
         );
     }
 
-   /* public static ItemDtoOwner toItemDtoOwner(Item item, List<Comment> commentsList) {*//*
-        return new ItemDtoOwner(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getIsAvailable(),
-                item.getRequest(),
-                null,
-                null,
-                commentsList
-        );*//*
-    }*/
-
     public static Item toItem(Long userId, ItemDto itemDto) {
         return new Item(
                 itemDto.getId(),
@@ -46,5 +32,4 @@ public final class ItemMapper {
                 itemDto.getRequest()
         );
     }
-
 }
