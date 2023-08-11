@@ -20,13 +20,13 @@ public class UserController {
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        log.info("Получен запрос \"GET /users\" на получение списка пользователей");
+        log.info("Получен запрос GET/users на получение списка пользователей");
         return userService.getAll();
     }
 
     @GetMapping("/{userId}")
     public UserDto getUser(@PathVariable Long userId) {
-        log.info(String.format("Получен запрос \"GET /users/userId=%s\" - получение пользователя по ID", userId));
+        log.info(String.format("Получен запрос GET/users/userId=%s - получение пользователя по ID", userId));
         validator.validateId(userId);
         return userService.getUser(userId);
     }
@@ -39,9 +39,8 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable Long userId, @RequestBody User user) {
-        log.info(String.format("Получен запрос \"PATCH /users/userId=%s\" на обновление данных пользователя", userId));
-        validator.validateId(userId);/*
-        validator.validateDuplicateEmailWhenUpdate(userId, user);*/
+        log.info(String.format("Получен запрос PATCH/users/userId=%s на обновление данных пользователя", userId));
+        validator.validateId(userId);
         return userService.updateUser(userId, user);
     }
 
