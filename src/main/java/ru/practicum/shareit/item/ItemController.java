@@ -30,7 +30,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto editItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
+                            @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
         log.info(String.format("Получен запрос PATCH /items/itemId=%s на редактирование данных вещи с названием %s",
                 userId, itemDto.getName()));
         validator.validateId(userId);
