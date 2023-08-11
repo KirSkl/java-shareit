@@ -74,8 +74,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAllMyItems(Long userId) {
-        return itemRepository.findItemsByOwnerIdOrderById(userId).stream().
-                map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+        return itemRepository.findItemsByOwnerIdOrderById(userId).stream()
+                        .map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                         .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                         .collect(Collectors.toList()))).map(itemDto -> addBookings(itemDto, userId))
                 .collect(Collectors.toList());
@@ -110,12 +110,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto addBookings(ItemDto itemDto, Long userId) {
-        var lastBooking = bookingRepository.
-                findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(itemDto.getId(),
+        var lastBooking = bookingRepository
+                .findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(itemDto.getId(),
                         LocalDateTime.now(), BookingStatus.REJECTED);
         lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toBookingItemDto(lastBooking.get())));
-        var nextBooking = bookingRepository.
-                findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(itemDto.getId(),
+        var nextBooking = bookingRepository
+                .findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(itemDto.getId(),
                         LocalDateTime.now(), BookingStatus.REJECTED);
         nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toBookingItemDto(nextBooking.get())));
         return itemDto;

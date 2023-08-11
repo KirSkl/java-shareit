@@ -109,8 +109,8 @@ public class BookingServiceImpl implements BookingService {
                             .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
                 case CURRENT:
                     return bookingRepository.findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
-                                    userId, LocalDateTime.now(), LocalDateTime.now()).stream().
-                            map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
+                                    userId, LocalDateTime.now(), LocalDateTime.now()).stream()
+                                    .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
                 case PAST:
                     return bookingRepository.findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(userId,
                                     LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
