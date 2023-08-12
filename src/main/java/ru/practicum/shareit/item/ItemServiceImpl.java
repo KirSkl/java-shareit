@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto editItem(Long userId, Long itemId, ItemDto itemDto) {
         final var oldItem = itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException(String.format("Вещь c id = %s не найдена", itemId)));
-        if (!(oldItem.getOwnerId().equals(userId))) {
+        if (!oldItem.getOwnerId().equals(userId)) {
             throw new NotAccessException("Редактировать данные может только владелец вещи");
         }
         final var item = ItemMapper.toItem(userId, itemDto);
@@ -65,12 +65,12 @@ public class ItemServiceImpl implements ItemService {
             return addBookings(ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                     .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                     .collect(Collectors.toList())), userId);
-        } else {
-            return ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+        }
+        return ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                     .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                     .collect(Collectors.toList()));
-        }
     }
+
 
     @Override
     public List<ItemDto> findAllMyItems(Long userId) {

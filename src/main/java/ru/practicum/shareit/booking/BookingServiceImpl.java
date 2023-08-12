@@ -50,11 +50,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new BookingAlreadyApprovedException("Нельзя изменить статус после одобрения");
         }
-        if (approved) {
-            booking.setStatus(BookingStatus.APPROVED);
-        } else {
-            booking.setStatus(BookingStatus.REJECTED);
-        }
+        booking.setStatus(approved? BookingStatus.APPROVED : BookingStatus.REJECTED);
         return BookingMapper.toBookingDtoResponse(bookingRepository.save(booking));
     }
 
