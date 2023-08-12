@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.common.Constants;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
@@ -21,7 +22,7 @@ public class ItemController {
     private Validator validator;
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto addItem(@RequestHeader(Constants.USER_HEADER) Long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info(String.format("Получен запрос POST /items на добавление вещи с названием %s", itemDto.getName()));
         validator.validateId(userId);
         validator.checkIsUserExists(userId);
@@ -29,7 +30,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto editItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto editItem(@RequestHeader(Constants.USER_HEADER) Long userId,
                             @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
         log.info(String.format("Получен запрос PATCH /items/itemId=%s на редактирование данных вещи с названием %s",
                 userId, itemDto.getName()));
@@ -40,7 +41,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto showItemInfo(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ItemDto showItemInfo(@PathVariable Long itemId, @RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format("Получен запрос GET /items/itemId=%s на получение информации о вещи", itemId));
         validator.validateId(itemId);
         validator.validateId(userId);
@@ -48,7 +49,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findAllMyItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDto> findAllMyItems(@RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format("Получен запрос GET /items на просмотр списка вещей пользователя с id=%s", userId));
         validator.validateId(userId);
         validator.checkIsUserExists(userId);
@@ -63,7 +64,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDtoResponse postComment(@PathVariable Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId,
+    public CommentDtoResponse postComment(@PathVariable Long itemId, @RequestHeader(Constants.USER_HEADER) Long userId,
                                           @Valid @RequestBody CommentDtoRequest text) {
         log.info(String.format(
                 "Получен запрос POST /items/userId=%s/comment на публикацию отзыва от пользователя с id = %s",
