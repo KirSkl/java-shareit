@@ -26,9 +26,9 @@ public final class ItemRequestMapper {
         );
     }
 
-    public static ItemRequestDtoResponseOwner toItemRequestDtoResponseOwner(ItemRequest itemRequest,
-                                                                            List<ItemRequestAnswerDto> answers) {
-        return new ItemRequestDtoResponseOwner(
+    public static ItemRequestDtoResponseWithAnswers toItemRequestDtoResponseWithAnswers(ItemRequest itemRequest,
+                                                                                  List<ItemRequestAnswerDto> answers) {
+        return new ItemRequestDtoResponseWithAnswers(
                 itemRequest.getDescription(),
                 itemRequest.getCreated(),
                 answers

@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
-import ru.practicum.shareit.request.dto.ItemRequestDtoResponseOwner;
+import ru.practicum.shareit.request.dto.ItemRequestDtoResponseWithAnswers;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -30,10 +30,19 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     }
 
     @Override
-    public List<ItemRequestDtoResponseOwner> getMyRequests(Long userId) {
+    public List<ItemRequestDtoResponseWithAnswers> getMyRequests(Long userId) {
         return itemRequestRepository.findAllByUserIdOrderByCreatedDesc(userId).stream().map(itemRequest ->
-                ItemRequestMapper.toItemRequestDtoResponseOwner(itemRequest, itemRepository.findAllByRequestId(
+                ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository.findAllByRequestId(
                         itemRequest.getId()).stream().map(ItemMapper::toItemRequestAnswerDto)
                         .collect(Collectors.toList()))).collect(Collectors.toList());
+    }
+
+    @Override
+    public ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId) {
+        var itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() ->
+                new NotFoundException(String.format("Запрос с id = %s не найден", requestId)));
+        return ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository.findAllByRequestId(
+                        itemRequest.getId()).stream().map(ItemMapper::toItemRequestAnswerDto)
+                        .collect(Collectors.toList()));
     }
 }

@@ -7,7 +7,7 @@ import ru.practicum.shareit.common.Constants;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
-import ru.practicum.shareit.request.dto.ItemRequestDtoResponseOwner;
+import ru.practicum.shareit.request.dto.ItemRequestDtoResponseWithAnswers;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,10 +32,18 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDtoResponseOwner> getMyRequests(@RequestHeader(Constants.USER_HEADER) Long userId) {
+    public List<ItemRequestDtoResponseWithAnswers> getMyRequests(@RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format(
                 "Получен запрос GET /requests на получение списка своих запросов от пользователя с id = %s", userId));
         validator.validateId(userId);
         return itemRequestService.getMyRequests(userId);
+    }
+
+    @GetMapping("/{requestId}")
+    public ItemRequestDtoResponseWithAnswers findItemRequest(@Valid @PathVariable Long requestId) {
+        log.info(String.format("Получен запрос GET /requests/requestId=%s на получение информации о запросе",
+                requestId));
+        validator.validateId(requestId);
+        return itemRequestService.findItemRequest(requestId);
     }
 }
