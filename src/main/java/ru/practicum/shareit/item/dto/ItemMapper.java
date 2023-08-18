@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemRequestAnswerDto;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public final class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getIsAvailable(),
-                item.getRequest(),
+                item.getRequestId(),
                 null,
                 null,
                 comments
@@ -29,7 +30,17 @@ public final class ItemMapper {
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
                 userId,
-                itemDto.getRequest()
+                itemDto.getRequestId()
+        );
+    }
+
+    public static ItemRequestAnswerDto toItemRequestAnswerDto(Item item) {
+        return new ItemRequestAnswerDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getIsAvailable(),
+                item.getRequestId()
         );
     }
 }
