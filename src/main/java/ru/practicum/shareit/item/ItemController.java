@@ -49,18 +49,25 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findAllMyItems(@RequestHeader(Constants.USER_HEADER) Long userId) {
-        log.info(String.format("Получен запрос GET /items на просмотр списка вещей пользователя с id=%s", userId));
+    public List<ItemDto> findAllMyItems(@RequestHeader(Constants.USER_HEADER) Long userId, @RequestParam(
+            defaultValue = Constants.DEFAULT_FROM) int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
+            int size) {
+        log.info(String.format("Получен запрос GET /items на просмотр списка вещей пользователя с id=%s, начиная с " +
+                "вещи %s, по %s вещей на странице", userId));
         validator.validateId(userId);
+        validator.validatePageParams(from, size);
         validator.checkIsUserExists(userId);
-        return itemService.findAllMyItems(userId);
+        return itemService.findAllMyItems(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
+    public List<ItemDto> search(@RequestParam String text, @RequestParam(defaultValue = Constants.DEFAULT_FROM)
+    int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
         log.info(String.format(
-                "Получен запрос GET /items/search на поиск вещей, соодержащих в названии или описании %s", text));
-        return itemService.search(text);
+                "Получен запрос GET /items/search на поиск вещей, соодержащих в названии или описании %s, начиная с " +
+                        "вещи %s, по %s вещей на странице", text, from, size));
+        validator.validatePageParams(from, size);
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

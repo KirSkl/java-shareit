@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -73,8 +74,8 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public List<ItemDto> findAllMyItems(Long userId) {
-        return itemRepository.findItemsByOwnerIdOrderById(userId).stream()
+    public List<ItemDto> findAllMyItems(Long userId, int from, int size) {
+        return itemRepository.findItemsByOwnerIdOrderById(userId, PageRequest.of(from, size)).stream()
                         .map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                         .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                         .collect(Collectors.toList()))).map(itemDto -> addBookings(itemDto, userId))
@@ -82,11 +83,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, int from, int size) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        return itemRepository.search(text)
+        return itemRepository.search(text, PageRequest.of(from, size))
                 .stream().map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                         .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                         .collect(Collectors.toList()))).collect(Collectors.toList());
