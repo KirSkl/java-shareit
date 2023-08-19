@@ -51,19 +51,25 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDtoResponse> getAllBookings(@RequestHeader(Constants.USER_HEADER) Long userId,
-                                                   @RequestParam(defaultValue = "ALL") String state) {
-        log.info(String.format("Получен запрос GET/bookings на получение всех бронирований пользователя с id = %s",
-                userId));
+                                                   @RequestParam(defaultValue = "ALL") String state,
+                                                   @RequestParam(defaultValue = Constants.DEFAULT_FROM) int from,
+                                                   @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
+        log.info(String.format("Получен запрос GET/bookings на получение %s бронирований пользователя с id = %s, " +
+                        "начиная с бронирования %s, по %s бронирований на странице", state, userId, from, size));
         validator.validateId(userId);
-        return bookingService.getAllBookings(userId, state);
+        validator.validatePageParams(from, size);
+        return bookingService.getAllBookings(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoResponse> getAllItemBookings(@RequestHeader(Constants.USER_HEADER) Long userId,
-                                                       @RequestParam(defaultValue = "ALL") String state) {
-        log.info(String.format("Получен запрос GET/owner на получение всех бронирований вещей пользователя с id = %s",
-                userId));
+                                                       @RequestParam(defaultValue = "ALL") String state,
+                                                       @RequestParam(defaultValue = Constants.DEFAULT_FROM) int from,
+                                                       @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
+        log.info(String.format("Получен запрос GET/owner на получение %s бронирований вещей пользователя с id = %s, " +
+                        "начиная с бронирования %s, по %s бронирований на странице", state, userId, from, size));
         validator.validateId(userId);
-        return bookingService.getAllItemBookings(userId, state);
+        validator.validatePageParams(from, size);
+        return bookingService.getAllItemBookings(userId, state, from, size);
     }
 }
