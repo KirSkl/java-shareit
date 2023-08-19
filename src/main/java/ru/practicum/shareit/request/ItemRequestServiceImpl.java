@@ -31,7 +31,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoResponseWithAnswers> getMyRequests(Long userId) {
-        checkUserExistsAndGet(userId);
         return itemRequestRepository.findAllByUserIdOrderByCreatedDesc(userId).stream().map(itemRequest ->
                         ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository))
                 .collect(Collectors.toList());
@@ -39,7 +38,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId, Long userId) {
-        checkUserExistsAndGet(userId);
         var itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException(String.format("Запрос с id = %s не найден", requestId)));
         return ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository);
@@ -47,13 +45,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoResponseWithAnswers> getAll(int from, int size, Long userId) {
-        checkUserExistsAndGet(userId);
         return itemRequestRepository.findAllByUserIdNotOrderByCreatedDesc(PageRequest.of(from, size), userId).stream()
                 .map(itemRequest -> ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository))
                 .collect(Collectors.toList());
-    }
-
-    private void checkUserExistsAndGet(Long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь на найден"));
     }
 }

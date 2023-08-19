@@ -27,6 +27,7 @@ public class ItemRequestController {
         log.info(String.format(
                 "Получен запрос POST /requests на добавление нового запроса вещи от пользователя с id = %s", userId));
         validator.validateId(userId);
+        validator.checkIsUserExists(userId);
         return itemRequestService.addRequest(userId, itemRequestDto);
     }
 
@@ -35,6 +36,7 @@ public class ItemRequestController {
         log.info(String.format(
                 "Получен запрос GET /requests на получение списка своих запросов от пользователя с id = %s", userId));
         validator.validateId(userId);
+        validator.checkIsUserExists(userId);
         return itemRequestService.getMyRequests(userId);
     }
 
@@ -45,6 +47,7 @@ public class ItemRequestController {
                 requestId));
         validator.validateId(requestId);
         validator.validateId(userId);
+        validator.checkIsUserExists(userId);
         return itemRequestService.findItemRequest(requestId, userId);
     }
 
@@ -57,6 +60,7 @@ public class ItemRequestController {
                         "пользователей с параметрами пагинации от %s до %s", userId, from, size));
         validator.validatePageParams(from, size);
         validator.validateId(userId);
+        validator.checkIsUserExists(userId);
         return itemRequestService.getAll(from, size, userId);
     }
 }
