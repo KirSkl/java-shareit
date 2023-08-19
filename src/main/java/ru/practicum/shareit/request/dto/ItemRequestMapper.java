@@ -1,10 +1,13 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public final class ItemRequestMapper {
@@ -27,11 +30,14 @@ public final class ItemRequestMapper {
     }
 
     public static ItemRequestDtoResponseWithAnswers toItemRequestDtoResponseWithAnswers(ItemRequest itemRequest,
-                                                                                  List<ItemRequestAnswerDto> answers) {
+                                                                                        ItemRepository itemRepository) {
+
         return new ItemRequestDtoResponseWithAnswers(
                 itemRequest.getDescription(),
                 itemRequest.getCreated(),
-                answers
+                itemRepository.findAllByRequestId(
+                                itemRequest.getId()).stream().map(ItemMapper::toItemRequestAnswerDto)
+                        .collect(Collectors.toList())
         );
     }
 }

@@ -11,5 +11,5 @@ import java.util.List;
 public class ItemRequestDtoResponseWithAnswers {
     private String description;
     private LocalDateTime created;
-    private List<ItemRequestAnswerDto> answers;
+    private List<ItemRequestAnswerDto> items;
 }

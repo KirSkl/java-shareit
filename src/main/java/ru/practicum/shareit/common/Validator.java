@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.exceptions.InvalidBookingDates;
+import ru.practicum.shareit.exceptions.InvalidPageParamsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationIdException;
 import ru.practicum.shareit.user.UserRepository;
@@ -36,5 +37,12 @@ public class Validator {
     public void checkIsUserExists(Long id) {
         log.info("Проверка наличия пользователя...");
         userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+    }
+
+    public void validatePageParams(int from, int size) {
+        log.info("Проверка параметров пагинации...");
+        if(from < 0 | size <=0) {
+            throw new InvalidPageParamsException("Указаны неверные параметры пагинации");
+        }
     }
 }
