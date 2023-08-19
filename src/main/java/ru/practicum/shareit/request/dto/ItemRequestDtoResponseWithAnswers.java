@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ItemRequestDtoResponseWithAnswers {
+    private Long id;
     private String description;
     private LocalDateTime created;
     private List<ItemRequestAnswerDto> items;

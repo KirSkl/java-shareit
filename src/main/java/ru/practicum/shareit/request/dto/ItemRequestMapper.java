@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -33,6 +32,7 @@ public final class ItemRequestMapper {
                                                                                         ItemRepository itemRepository) {
 
         return new ItemRequestDtoResponseWithAnswers(
+                itemRequest.getId(),
                 itemRequest.getDescription(),
                 itemRequest.getCreated(),
                 itemRepository.findAllByRequestId(

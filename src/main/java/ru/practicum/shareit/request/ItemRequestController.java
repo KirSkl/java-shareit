@@ -18,7 +18,6 @@ import java.util.List;
 @Slf4j
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
-
     private Validator validator;
     private ItemRequestService itemRequestService;
 
@@ -40,19 +39,19 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDtoResponseWithAnswers findItemRequest(@Valid @PathVariable Long requestId) {
+    public ItemRequestDtoResponseWithAnswers findItemRequest(@Valid @PathVariable Long requestId,
+                                                             @RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format("Получен запрос GET /requests/requestId=%s на получение информации о запросе",
                 requestId));
         validator.validateId(requestId);
-        return itemRequestService.findItemRequest(requestId);
+        validator.validateId(userId);
+        return itemRequestService.findItemRequest(requestId, userId);
     }
-
-
 
     @GetMapping("/all")
     public List<ItemRequestDtoResponseWithAnswers> getAllRequests(@RequestParam(
             defaultValue = Constants.DEFAULT_FROM) int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
-            int size, @RequestHeader(Constants.USER_HEADER) Long userId) {
+                                                                  int size, @RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format(
                 "Получен запрос GET /requests/all от пользователя = %s на получение списка запросов других " +
                         "пользователей с параметрами пагинации от %s до %s", userId, from, size));

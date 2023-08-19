@@ -2,25 +2,21 @@ package ru.practicum.shareit.request;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponseWithAnswers;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
     private ItemRequestRepository itemRequestRepository;
     private UserRepository userRepository;
     private ItemRepository itemRepository;
@@ -37,12 +33,13 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     public List<ItemRequestDtoResponseWithAnswers> getMyRequests(Long userId) {
         checkUserExistsAndGet(userId);
         return itemRequestRepository.findAllByUserIdOrderByCreatedDesc(userId).stream().map(itemRequest ->
-                ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository))
+                        ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId) {
+    public ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId, Long userId) {
+        checkUserExistsAndGet(userId);
         var itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException(String.format("Запрос с id = %s не найден", requestId)));
         return ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository);
@@ -50,12 +47,13 @@ public class ItemRequestServiceImpl implements ItemRequestService{
 
     @Override
     public List<ItemRequestDtoResponseWithAnswers> getAll(int from, int size, Long userId) {
+        checkUserExistsAndGet(userId);
         return itemRequestRepository.findAllByUserIdNotOrderByCreatedDesc(PageRequest.of(from, size), userId).stream()
                 .map(itemRequest -> ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository))
                 .collect(Collectors.toList());
     }
 
-    private User checkUserExistsAndGet(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь на найден"));
+    private void checkUserExistsAndGet(Long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь на найден"));
     }
 }

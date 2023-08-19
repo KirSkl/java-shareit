@@ -32,6 +32,7 @@ public class ExceptionHandlerController {
         return Map.of("error", "ID должен быть указан в числовом формате",
                 "errorMessage", e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleInvalidPageParamsException(InvalidPageParamsException e) {
