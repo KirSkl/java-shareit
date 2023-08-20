@@ -37,7 +37,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId, Long userId) {
+    public ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId) {
         var itemRequest = itemRequestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException(String.format("Запрос с id = %s не найден", requestId)));
         return ItemRequestMapper.toItemRequestDtoResponseWithAnswers(itemRequest, itemRepository);

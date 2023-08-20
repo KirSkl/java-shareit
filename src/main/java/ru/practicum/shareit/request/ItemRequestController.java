@@ -48,7 +48,7 @@ public class ItemRequestController {
         validator.validateId(requestId);
         validator.validateId(userId);
         validator.checkIsUserExists(userId);
-        return itemRequestService.findItemRequest(requestId, userId);
+        return itemRequestService.findItemRequest(requestId);
     }
 
     @GetMapping("/all")

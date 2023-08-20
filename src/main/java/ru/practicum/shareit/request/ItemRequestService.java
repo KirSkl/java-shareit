@@ -11,7 +11,7 @@ public interface ItemRequestService {
 
     List<ItemRequestDtoResponseWithAnswers> getMyRequests(Long userId);
 
-    ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId, Long userId);
+    ItemRequestDtoResponseWithAnswers findItemRequest(Long requestId);
 
     List<ItemRequestDtoResponseWithAnswers> getAll(int from, int size, Long userId);
 }
