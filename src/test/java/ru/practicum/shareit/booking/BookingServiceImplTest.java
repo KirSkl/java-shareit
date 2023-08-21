@@ -11,6 +11,9 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exceptions.ItemNotAvailable;
+import ru.practicum.shareit.exceptions.NotAccessException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.comment.CommentRepository;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -66,6 +70,7 @@ public class BookingServiceImplTest {
     private Booking bookingAnotherItemWithoutId;
     private BookingDtoRequest bookingDtoRequest;
     private BookingDtoResponse bookingDtoResponse;
+    private BookingDtoResponse bookingDtoResponseApproved;
     @BeforeEach
     void loadInitial() {
         item = new Item(1L, "Hammer", "Very big", true, 1L, 1L);
@@ -79,7 +84,7 @@ public class BookingServiceImplTest {
         commentDtoResponse = new CommentDtoResponse(comment.getId(), comment.getText(),
                 comment.getAuthor().getName(), comment.getCreated());
         booking = new Booking(1L, LocalDateTime.of(2000, 4, 27, 12, 1, 1),
-                LocalDateTime.now(), item, user, BookingStatus.APPROVED);
+                LocalDateTime.now(), item, user, BookingStatus.WAITING);
         bookingWithoutId = new Booking(1L, LocalDateTime.of(2000, 4, 27, 12, 1, 1),
                 LocalDateTime.now(), item, user, BookingStatus.APPROVED);
         bookingAnother = new Booking(2L, LocalDateTime.now(),
@@ -91,6 +96,8 @@ public class BookingServiceImplTest {
         bookingDtoRequest = new BookingDtoRequest(itemId, booking.getStartDate(), booking.getEndDate());
         bookingDtoResponse = new BookingDtoResponse(booking.getId(), booking.getStartDate(), booking.getEndDate(),
                 booking.getStatus(), booking.getBooker(), booking.getItem());
+        bookingDtoResponseApproved = new BookingDtoResponse(booking.getId(), booking.getStartDate(), booking.getEndDate(),
+                BookingStatus.APPROVED, booking.getBooker(), booking.getItem());
         BookingItemDto bookingItemDto = new BookingItemDto(booking.getId(), userId);
         BookingItemDto bookingItemDtoAnother = new BookingItemDto(bookingAnother.getId(), userId);
         itemDto = new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getIsAvailable(),
@@ -115,5 +122,67 @@ public class BookingServiceImplTest {
         verify(userRepository, times(1)).findById(userId);
         verify(itemRepository, times(1)).findById(bookingDtoRequest.getItemId());
         verify(bookingRepository, times(1)).save(bookingAnotherItemWithoutId);
+    }
+
+    @Test
+    void testCreateBookingUserNotExistsThrownNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(userId, bookingDtoRequest));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(itemRepository, never()).findById(any());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testCreateBookingItemNotExistsThrownNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(userId, bookingDtoRequest));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(itemRepository, times(1)).findById(bookingDtoRequest.getItemId());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testCreateBookingItemNotAvailableThrown() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(itemAnotherOwner));
+        itemAnotherOwner.setIsAvailable(false);
+
+        assertThrows(ItemNotAvailable.class, () -> bookingService.createBooking(userId, bookingDtoRequest));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(itemRepository, times(1)).findById(bookingDtoRequest.getItemId());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testCreateBookingUserIsOwnerThrownNotAccess() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+        assertThrows(NotAccessException.class, () -> bookingService.createBooking(userId, bookingDtoRequest));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(itemRepository, times(1)).findById(bookingDtoRequest.getItemId());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testApprovedBookingOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any())).thenReturn(booking);
+
+        var result = bookingService.approvedBooking(booking.getId(), true, userId);
+
+        assertEquals(bookingDtoResponseApproved, result);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1)).findById(booking.getId());
+        verify(bookingRepository, times(1)).save(booking);
     }
 }
