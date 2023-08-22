@@ -11,11 +11,11 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exceptions.BookingAlreadyApprovedException;
 import ru.practicum.shareit.exceptions.ItemNotAvailable;
 import ru.practicum.shareit.exceptions.NotAccessException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
@@ -181,8 +181,85 @@ public class BookingServiceImplTest {
         var result = bookingService.approvedBooking(booking.getId(), true, userId);
 
         assertEquals(bookingDtoResponseApproved, result);
+
+        bookingDtoResponse.setStatus(BookingStatus.REJECTED);
+        booking.setStatus(BookingStatus.WAITING);
+
+        result = bookingService.approvedBooking(booking.getId(), false, userId);
+
+        assertEquals(bookingDtoResponse, result);
+        verify(userRepository, times(2)).findById(userId);
+        verify(bookingRepository, times(2)).findById(booking.getId());
+        verify(bookingRepository, times(2)).save(booking);
+    }
+
+    @Test
+    void testApprovedBookingUserNotExistsThrownNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.approvedBooking(
+                booking.getId(), true, userId));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, never()).findById(any());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testApprovedBookingNotExistsThrownNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.approvedBooking(
+                booking.getId(), true, userId));
+
         verify(userRepository, times(1)).findById(userId);
         verify(bookingRepository, times(1)).findById(booking.getId());
-        verify(bookingRepository, times(1)).save(booking);
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testApprovedBookingAlreadyApprovedThrown() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        booking.setStatus(BookingStatus.APPROVED);
+
+        assertThrows(BookingAlreadyApprovedException.class, () -> bookingService.approvedBooking(
+                booking.getId(), true, userId));
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1)).findById(booking.getId());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testApprovedBookingThrownNotAccessExc() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        final Long notOwnerUserId = 2L;
+
+        assertThrows(NotAccessException.class, () -> bookingService.approvedBooking(
+                booking.getId(), true, notOwnerUserId));
+        verify(userRepository, times(1)).findById(notOwnerUserId);
+        verify(bookingRepository, times(1)).findById(booking.getId());
+        verify(bookingRepository, never()).save(any());
+    }
+
+    @Test
+    void testGetBookingOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        var result = bookingService.getBooking(userId, booking.getId());
+
+        assertEquals(bookingDtoResponse, result);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1)).findById(booking.getId());
+    }
+
+    @Test
+    void testGetBookingUserNotFoundThrown() {
+
     }
 }
