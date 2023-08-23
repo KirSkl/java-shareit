@@ -6,24 +6,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
-import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.comment.CommentRepository;
-import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
-import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
-import ru.practicum.shareit.item.comment.model.Comment;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,39 +29,23 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceImplTest {
+    private final int from = 0;
+    private final int size = 10;
     @Mock
     UserRepository userRepository;
+    @InjectMocks
+    BookingServiceImpl bookingService;
     @Mock
     private ItemRepository itemRepository;
     @Mock
-    private CommentRepository commentRepository;
-    @Mock
     private BookingRepository bookingRepository;
-    @InjectMocks
-    BookingServiceImpl bookingService;
-
-    private final int from = 0;
-    private final int size = 10;
     private Item item;
     private Item itemAnotherOwner;
-    private ItemDto itemDto;
-    private ItemDto itemAnotherOwnerDto;
-    private ItemDto itemDtoWithoutBookings;
-    private ItemDto itemDtoWithoutBookingsAndComments;
-    private Long itemId;
     private Long userId;
     private User user;
-    private Comment comment;
-    private Comment commentWithoutId;
-    private CommentDtoRequest commentDtoRequest;
-    private CommentDtoResponse commentDtoResponse;
     private Booking booking;
-    private Booking bookingAnother;
-    private Booking bookingWithoutId;
-    private Booking bookingAnotherItemWithoutId;
     private BookingDtoRequest bookingDtoRequest;
     private BookingDtoResponse bookingDtoResponse;
-    private BookingDtoResponse bookingDtoResponseApproved;
     private String stateAll;
     private String stateCurrent;
     private String statePast;
@@ -75,44 +53,18 @@ public class BookingServiceImplTest {
     private String stateWaiting;
     private String stateRejected;
     private String stateWrong;
+
     @BeforeEach
     void loadInitial() {
         item = new Item(1L, "Hammer", "Very big", true, 1L, 1L);
         itemAnotherOwner = new Item(2L, "Hammer", "Very big", true, 2L, 1L);
         userId = 1L;
-        itemId = 1L;
         user = new User(1L, "John", "John@mail.com");
-        comment = new Comment(1L, "Хорошая вещь", item, user, LocalDateTime.now());
-        commentWithoutId = new Comment(null, "Хорошая вещь", item, user, LocalDateTime.now());
-        commentDtoRequest = new CommentDtoRequest("Хорошая вещь");
-        commentDtoResponse = new CommentDtoResponse(comment.getId(), comment.getText(),
-                comment.getAuthor().getName(), comment.getCreated());
         booking = new Booking(1L, LocalDateTime.of(2000, 4, 27, 12, 1, 1),
                 LocalDateTime.now(), item, user, BookingStatus.WAITING);
-        bookingWithoutId = new Booking(1L, LocalDateTime.of(2000, 4, 27, 12, 1, 1),
-                LocalDateTime.now(), item, user, BookingStatus.APPROVED);
-        bookingAnother = new Booking(2L, LocalDateTime.now(),
-                LocalDateTime.of(2035, 1, 1, 1, 1, 1),
-                item, user, BookingStatus.APPROVED);
-        bookingAnotherItemWithoutId = new Booking(null,
-                LocalDateTime.of(2000, 4, 27, 12, 1, 1), LocalDateTime.now(),
-                itemAnotherOwner, user, BookingStatus.WAITING);
-        bookingDtoRequest = new BookingDtoRequest(itemId, booking.getStartDate(), booking.getEndDate());
+        bookingDtoRequest = new BookingDtoRequest(1L, booking.getStartDate(), booking.getEndDate());
         bookingDtoResponse = new BookingDtoResponse(booking.getId(), booking.getStartDate(), booking.getEndDate(),
                 booking.getStatus(), booking.getBooker(), booking.getItem());
-        bookingDtoResponseApproved = new BookingDtoResponse(booking.getId(), booking.getStartDate(), booking.getEndDate(),
-                BookingStatus.APPROVED, booking.getBooker(), booking.getItem());
-        BookingItemDto bookingItemDto = new BookingItemDto(booking.getId(), userId);
-        BookingItemDto bookingItemDtoAnother = new BookingItemDto(bookingAnother.getId(), userId);
-        itemDto = new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getIsAvailable(),
-                item.getRequestId(), bookingItemDto, bookingItemDtoAnother, List.of(commentDtoResponse));
-        itemDtoWithoutBookings = new ItemDto(item.getId(), item.getName(), item.getDescription(), item.getIsAvailable(),
-                item.getRequestId(), null, null, List.of(commentDtoResponse));
-        itemDtoWithoutBookingsAndComments = new ItemDto(item.getId(), item.getName(), item.getDescription(),
-                item.getIsAvailable(), item.getRequestId(), null, null, Collections.emptyList());
-        itemAnotherOwnerDto = new ItemDto(itemAnotherOwner.getId(), itemAnotherOwner.getName(),
-                itemAnotherOwner.getDescription(), itemAnotherOwner.getIsAvailable(), itemAnotherOwner.getRequestId(),
-                null, null, Collections.emptyList());
         stateAll = "ALL";
         stateCurrent = "CURRENT";
         stateFuture = "FUTURE";
@@ -121,6 +73,7 @@ public class BookingServiceImplTest {
         stateWaiting = "WAITING";
         stateWrong = "fjskfs";
     }
+
     @Test
     void testCreateBookingOk() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
@@ -189,9 +142,11 @@ public class BookingServiceImplTest {
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
 
+        bookingDtoResponse.setStatus(BookingStatus.APPROVED);
+
         var result = bookingService.approvedBooking(booking.getId(), true, userId);
 
-        assertEquals(bookingDtoResponseApproved, result);
+        assertEquals(bookingDtoResponse, result);
 
         bookingDtoResponse.setStatus(BookingStatus.REJECTED);
         booking.setStatus(BookingStatus.WAITING);
@@ -338,7 +293,7 @@ public class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndEndDateBeforeOrderByStartDateDesc(
                 anyLong(), any(), any())).thenReturn(List.of(booking));
 
-        var resultPast = bookingService.getAllBookings(userId, statePast, from, size );
+        var resultPast = bookingService.getAllBookings(userId, statePast, from, size);
 
         assertEquals(List.of(bookingDtoResponse), resultPast);
         verify(userRepository, times(1)).findById(userId);
@@ -352,7 +307,7 @@ public class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndStartDateAfterOrderByStartDateDesc(
                 anyLong(), any(), any())).thenReturn(List.of(booking));
 
-        var resultFuture = bookingService.getAllBookings(userId, stateFuture, from, size );
+        var resultFuture = bookingService.getAllBookings(userId, stateFuture, from, size);
 
         assertEquals(List.of(bookingDtoResponse), resultFuture);
         verify(userRepository, times(1)).findById(userId);
@@ -366,35 +321,26 @@ public class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(
                 anyLong(), any(), any())).thenReturn(List.of(booking));
 
-        var resultRejected = bookingService.getAllBookings(userId, stateRejected, from, size );
+        var resultRejected = bookingService.getAllBookings(userId, stateRejected, from, size);
 
         assertEquals(List.of(bookingDtoResponse), resultRejected);
         verify(userRepository, times(1)).findById(userId);
         verify(bookingRepository, times(1)).findAllByBookerIdAndStatusOrderByStartDateDesc(
                 anyLong(), any(), any());
     }
+
     @Test
     void testGetAllBookingWaitingOk() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(
                 anyLong(), any(), any())).thenReturn(List.of(booking));
 
-        var resultWaiting = bookingService.getAllBookings(userId, stateWaiting, from, size );
+        var resultWaiting = bookingService.getAllBookings(userId, stateWaiting, from, size);
 
         assertEquals(List.of(bookingDtoResponse), resultWaiting);
         verify(userRepository, times(1)).findById(userId);
         verify(bookingRepository, times(1)).findAllByBookerIdAndStatusOrderByStartDateDesc(
                 anyLong(), any(), any());
-    }
-
-    @Test
-    void testGetAllBookingUserNotExistsThrownNotFound() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> bookingService.getAllBookings(userId, stateAll, from, size));
-
-        verify(userRepository, times(1)).findById(userId);
-        verify(bookingRepository, never()).findAllByBookerIdOrderByStartDateDesc(anyLong(), any());
     }
 
     @Test
@@ -415,5 +361,128 @@ public class BookingServiceImplTest {
                 anyLong(), any(), any());
         verify(bookingRepository, never()).findAllByBookerIdAndStatusOrderByStartDateDesc(
                 anyLong(), any(), any());
+    }
+
+    @Test
+    void testGetAllBookingUserNotExistsThrownNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.getAllBookings(userId, stateAll, from, size));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, never()).findAllByBookerIdOrderByStartDateDesc(anyLong(), any());
+    }
+
+    @Test
+    void testGetAllItemBookingsAllOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByItemOwnerIdOrderByStartDateDesc(anyLong(), any())).thenReturn(List.of(booking));
+
+        var resultAll = bookingService.getAllItemBookings(userId, stateAll, from, size);
+
+        assertEquals(List.of(bookingDtoResponse), resultAll);
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1)).
+                findAllByItemOwnerIdOrderByStartDateDesc(userId, PageRequest.of(from, size));
+    }
+
+    @Test
+    void testGetAllItemBookingsCurrentOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                anyLong(), any(), any(), any())).thenReturn(List.of(booking));
+
+        var resultCurrent = bookingService.getAllItemBookings(userId, stateCurrent, from, size);
+
+        assertEquals(List.of(bookingDtoResponse), resultCurrent);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1))
+                .findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                        anyLong(), any(), any(), any());
+    }
+
+    @Test
+    void testGetAllItemBookingPastOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(
+                anyLong(), any(), any())).thenReturn(List.of(booking));
+
+        var resultPast = bookingService.getAllItemBookings(userId, statePast, from, size);
+
+        assertEquals(List.of(bookingDtoResponse), resultPast);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1))
+                .findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(anyLong(), any(), any());
+    }
+
+    @Test
+    void testGetAllItemBookingFutureOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(
+                anyLong(), any(), any())).thenReturn(List.of(booking));
+
+        var resultFuture = bookingService.getAllItemBookings(userId, stateFuture, from, size);
+
+        assertEquals(List.of(bookingDtoResponse), resultFuture);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1))
+                .findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(anyLong(), any(), any());
+    }
+
+    @Test
+    void testGetAllItemBookingRejectedOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                anyLong(), any(), any())).thenReturn(List.of(booking));
+
+        var resultRejected = bookingService.getAllItemBookings(userId, stateRejected, from, size);
+
+        assertEquals(List.of(bookingDtoResponse), resultRejected);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1)).findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                userId, BookingStatus.valueOf(stateRejected), PageRequest.of(from, size));
+    }
+
+    @Test
+    void testGetAllItemBookingWaitingOk() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                anyLong(), any(), any())).thenReturn(List.of(booking));
+
+        var resultWaiting = bookingService.getAllItemBookings(userId, stateWaiting, from, size);
+
+        assertEquals(List.of(bookingDtoResponse), resultWaiting);
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, times(1)).findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                userId, BookingStatus.valueOf(stateWaiting), PageRequest.of(from, size));
+    }
+
+    @Test
+    void testGetAllItemBookingUserNotExistsThrownNotFound() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.getAllItemBookings(userId, stateAll, from, size));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, never()).findAllByItemOwnerIdOrderByStartDateDesc(anyLong(), any());
+    }
+
+    @Test
+    void testGetAllItemBookingsWrongStateThrown() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        assertThrows(UnsupportedBookingStateException.class, () ->
+                bookingService.getAllItemBookings(userId, stateWrong, from, size));
+
+        verify(userRepository, times(1)).findById(userId);
+        verify(bookingRepository, never()).findAllByItemOwnerIdOrderByStartDateDesc(anyLong(), any());
+        verify(bookingRepository, never()).findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                anyLong(), any(), any(), any());
+        verify(bookingRepository, never()).findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(
+                anyLong(), any(), any());
+        verify(bookingRepository, never()).findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(
+                anyLong(), any(), any());
+        verify(bookingRepository, never()).findAllByItemOwnerIdAndStatusOrderByStartDateDesc(anyLong(), any(), any());
     }
 }
