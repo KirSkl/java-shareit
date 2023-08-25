@@ -54,7 +54,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDtoResponseWithAnswers> getAllRequests(@RequestParam(
             defaultValue = Constants.DEFAULT_FROM) int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
-                                                                  int size, @RequestHeader(Constants.USER_HEADER) Long userId) {
+                                                                  int size,
+                                                                  @RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format(
                 "Получен запрос GET /requests/all от пользователя = %s на получение списка запросов других " +
                         "пользователей с параметрами пагинации от %s до %s", userId, from, size));
