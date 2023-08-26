@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -12,18 +11,16 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 public class CommentRepositoryTest {
     @Autowired
-    private CommentRepository repository;
-    @Autowired
     ItemRepository itemRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private CommentRepository repository;
 
     @Test
     void testFindAllByItemOk() {
