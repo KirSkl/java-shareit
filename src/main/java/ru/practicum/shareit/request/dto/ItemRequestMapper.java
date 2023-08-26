@@ -3,7 +3,7 @@ package ru.practicum.shareit.request.dto;
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.stream.Collectors;
