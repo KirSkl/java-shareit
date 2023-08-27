@@ -69,10 +69,10 @@ public class ItemServiceImplTest {
         userId = 1L;
         user = new User(1L, "John", "John@mail.com");
         comment = new Comment(1L, "Хорошая вещь", item, user, LocalDateTime.now());
-        commentWithoutId = new Comment(null, "Хорошая вещь", item, user, LocalDateTime.now());
         commentDtoRequest = new CommentDtoRequest("Хорошая вещь");
         commentDtoResponse = new CommentDtoResponse(comment.getId(), comment.getText(),
                 comment.getAuthor().getName(), comment.getCreated());
+        commentWithoutId = new Comment(null, "Хорошая вещь", item, user, commentDtoRequest.getCreated());
         booking = new Booking(1L, LocalDateTime.of(2000, 4, 27, 12, 1, 1),
                 LocalDateTime.now(), item, user, BookingStatus.APPROVED);
         bookingAnother = new Booking(2L, LocalDateTime.now(),
