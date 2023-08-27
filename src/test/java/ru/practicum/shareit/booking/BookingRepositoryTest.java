@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,11 +28,14 @@ public class BookingRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    private Booking bookingPast;
-    private Booking bookingCurrent;
-    private Booking bookingFuture;
+    private Booking bookingPastItem;
+    private Booking bookingCurrentItem2;
+    private Booking bookingFutureItem2;
+    private Booking bookingCurrentNextItem;
     private Item item;
+    private Item item2;
     private User user;
+    private User user2;
     private Pageable page;
 
     @BeforeEach
@@ -39,27 +43,159 @@ public class BookingRepositoryTest {
         user = userRepository.save(new User(null, "John", "john@doe.com"));
         item = itemRepository.save(new Item(null, "Hammer", "Very big", true,
                 user.getId(), null));
-        bookingPast = repository.save(new Booking(null,
+        user2 = userRepository.save(new User(null, "Jack", "jack@doe.com"));
+        item2 = itemRepository.save(new Item(null, "Iron", "Very hot", false,
+                user2.getId(), null));
+        bookingPastItem = repository.save(new Booking(null,
                 LocalDateTime.of(2000, 1, 1, 1, 1, 1),
                 LocalDateTime.of(2000, 1, 1, 2, 1, 1),
-                item, user, BookingStatus.APPROVED));
-        bookingCurrent =  repository.save(new Booking(null,
+                item, user2, BookingStatus.WAITING));
+        bookingCurrentItem2 = repository.save(new Booking(null,
                 LocalDateTime.of(2022, 1, 1, 1, 1, 1),
                 LocalDateTime.of(2024, 1, 1, 1, 1, 1),
-                item, user, BookingStatus.APPROVED));
-        bookingFuture = repository.save(new Booking(null,
+                item2, user, BookingStatus.APPROVED));
+        bookingCurrentNextItem = repository.save(new Booking(null,
+                LocalDateTime.of(2022, 2, 1, 1, 1, 1),
+                LocalDateTime.of(2024, 1, 1, 1, 1, 1),
+                item, user2, BookingStatus.REJECTED));
+        bookingFutureItem2 = repository.save(new Booking(null,
                 LocalDateTime.of(2025, 1, 1, 1, 1, 1),
                 LocalDateTime.of(2025, 1, 1, 2, 1, 1),
-                item, user, BookingStatus.APPROVED));
-        page = PageRequest.of(0, 2);
+                item2, user, BookingStatus.APPROVED));
+        page = PageRequest.of(0, 1);
     }
 
     @Test
     void testFindAllByBookerIdOrderByStartDateDesc() {
         var result = repository.findAllByBookerIdOrderByStartDateDesc(user.getId(), page);
 
-        assertTrue(result.size() == 2);
-        assertEquals(bookingFuture, result.get(0));
-        assertEquals(bookingCurrent, result.get(1));
+        assertTrue(result.size() == 1);
+        assertEquals(bookingFutureItem2, result.get(0));
     }
+
+    @Test
+    void testFindAllByBookerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc() {
+        var result = repository.findAllByBookerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                user2.getId(), LocalDateTime.now(), LocalDateTime.now(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingCurrentNextItem, result.get(0));
+    }
+
+    @Test
+    void testFindAllByBookerIdAndEndDateBeforeOrderByStartDateDesc() {
+        var result = repository.findAllByBookerIdAndEndDateBeforeOrderByStartDateDesc(
+                user2.getId(), LocalDateTime.now(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingPastItem, result.get(0));
+    }
+
+    @Test
+    void testFindAllByBookerIdAndStartDateAfterOrderByStartDateDesc() {
+        var result = repository.findAllByBookerIdAndStartDateAfterOrderByStartDateDesc(
+                user.getId(), LocalDateTime.now(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingFutureItem2, result.get(0));
+    }
+
+    @Test
+    void testFindAllByBookerIdAndStatusOrderByStartDateDesc() {
+        var resultApproved = repository.findAllByBookerIdAndStatusOrderByStartDateDesc(
+                user.getId(), BookingStatus.APPROVED, page);
+        var resultRejected = repository.findAllByBookerIdAndStatusOrderByStartDateDesc(
+                user.getId(), BookingStatus.REJECTED, page);
+        var resultWaiting = repository.findAllByBookerIdAndStatusOrderByStartDateDesc(
+                user2.getId(), BookingStatus.WAITING, page);
+
+        assertTrue(resultApproved.size() == 1);
+        assertEquals(bookingFutureItem2, resultApproved.get(0));
+
+        assertEquals(Collections.emptyList(), resultRejected);
+
+        assertTrue(resultWaiting.size() == 1);
+        assertEquals(bookingPastItem, resultWaiting.get(0));
+    }
+
+    @Test
+    void testFindAllByItemOwnerIdOrderByStartDateDesc() {
+        var result = repository.findAllByItemOwnerIdOrderByStartDateDesc(item.getOwnerId(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingCurrentNextItem, result.get(0));
+    }
+
+    @Test
+    void testFindAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc() {
+        var result = repository.findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
+                item2.getOwnerId(), LocalDateTime.now(), LocalDateTime.now(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingCurrentItem2, result.get(0));
+    }
+
+    @Test
+    void testFindAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc() {
+        var result = repository.findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(
+                user.getId(), LocalDateTime.now(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingPastItem, result.get(0));
+    }
+
+    @Test
+    void testFindAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc() {
+        var result = repository.findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(
+                user2.getId(), LocalDateTime.now(), page);
+
+        assertTrue(result.size() == 1);
+        assertEquals(bookingFutureItem2, result.get(0));
+    }
+
+    @Test
+    void testFindAllByItemOwnerIdAndStatusOrderByStartDateDesc() {
+        var resultApproved = repository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                user2.getId(), BookingStatus.APPROVED, page);
+        var resultRejected = repository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                user2.getId(), BookingStatus.REJECTED, page);
+        var resultWaiting = repository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(
+                user.getId(), BookingStatus.WAITING, page);
+
+        assertTrue(resultApproved.size() == 1);
+        assertEquals(bookingFutureItem2, resultApproved.get(0));
+
+        assertEquals(Collections.emptyList(), resultRejected);
+
+        assertTrue(resultWaiting.size() == 1);
+        assertEquals(bookingPastItem, resultWaiting.get(0));
+    }
+
+    @Test
+    void testFindAllByBookerIdAndItemIdAndEndDateBeforeAndStatus() {
+        var result = repository.findAllByBookerIdAndItemIdAndEndDateBeforeAndStatus(
+                user2.getId(), item.getId(), LocalDateTime.now(), BookingStatus.APPROVED);
+
+        assertTrue(result.size() == 0);
+    }
+
+    @Test
+    void testFindFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc() {
+        var result = repository
+                .findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(
+                        item.getId(), LocalDateTime.now(), BookingStatus.REJECTED);
+
+        assertTrue(result.isPresent());
+        assertEquals(bookingPastItem, result.get());
+    }
+
+    @Test
+    void testFindFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate() {
+        var result = repository.findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(
+                item2.getId(), LocalDateTime.now(), BookingStatus.REJECTED);
+
+        assertTrue(result.isPresent());
+        assertEquals(bookingFutureItem2, result.get());
+    }
+
 }
