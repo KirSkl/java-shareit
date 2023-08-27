@@ -16,11 +16,6 @@ import ru.practicum.shareit.common.Constants;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.exceptions.InvalidPageParamsException;
 import ru.practicum.shareit.exceptions.ValidationIdException;
-import ru.practicum.shareit.item.ItemController;
-import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
-import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -28,12 +23,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = BookingController.class)

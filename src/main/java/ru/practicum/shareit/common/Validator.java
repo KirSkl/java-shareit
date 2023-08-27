@@ -41,7 +41,7 @@ public class Validator {
 
     public void validatePageParams(int from, int size) {
         log.info("Проверка параметров пагинации...");
-        if(from < 0 | size <=0) {
+        if (from < 0 | size <= 0) {
             throw new InvalidPageParamsException("Указаны неверные параметры пагинации");
         }
     }

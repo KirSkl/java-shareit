@@ -269,8 +269,8 @@ public class BookingServiceImplTest {
         assertEquals(List.of(bookingDtoResponse), resultAll);
 
         verify(userRepository, times(1)).findById(userId);
-        verify(bookingRepository, times(1)).
-                findAllByBookerIdOrderByStartDateDesc(anyLong(), any());
+        verify(bookingRepository, times(1))
+                .findAllByBookerIdOrderByStartDateDesc(anyLong(), any());
     }
 
     @Test
@@ -351,8 +351,8 @@ public class BookingServiceImplTest {
                 bookingService.getAllBookings(userId, stateWrong, from, size));
 
         verify(userRepository, times(1)).findById(userId);
-        verify(bookingRepository, never()).
-                findAllByBookerIdOrderByStartDateDesc(anyLong(), any());
+        verify(bookingRepository, never())
+                .findAllByBookerIdOrderByStartDateDesc(anyLong(), any());
         verify(bookingRepository, never()).findAllByBookerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
                 anyLong(), any(), any(), any());
         verify(bookingRepository, never()).findAllByBookerIdAndEndDateBeforeOrderByStartDateDesc(
@@ -383,8 +383,8 @@ public class BookingServiceImplTest {
         assertEquals(List.of(bookingDtoResponse), resultAll);
 
         verify(userRepository, times(1)).findById(userId);
-        verify(bookingRepository, times(1)).
-                findAllByItemOwnerIdOrderByStartDateDesc(userId, PageRequest.of(from, size));
+        verify(bookingRepository, times(1))
+                .findAllByItemOwnerIdOrderByStartDateDesc(userId, PageRequest.of(from, size));
     }
 
     @Test

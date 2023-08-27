@@ -144,10 +144,10 @@ public class ItemServiceImplTest {
         var result = itemService.showItemInfo(item.getId(), userId);
 
         assertEquals(itemDto, result);
-        verify(bookingRepository, times(1)).
-                findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(any(), any(), any());
-        verify(bookingRepository, times(1)).
-                findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(any(), any(), any());
+        verify(bookingRepository, times(1))
+                .findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(any(), any(), any());
+        verify(bookingRepository, times(1))
+                .findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(any(), any(), any());
         verify(itemRepository, times(1)).findById(item.getId());
     }
 
@@ -186,13 +186,13 @@ public class ItemServiceImplTest {
         var result = itemService.findAllMyItems(userId, from, size);
 
         assertEquals(List.of(itemDto), result);
-        verify(itemRepository, times(1)).findItemsByOwnerIdOrderById
-                (userId, PageRequest.of(from, size));
+        verify(itemRepository, times(1)).findItemsByOwnerIdOrderById(
+                userId, PageRequest.of(from, size));
         verify(commentRepository, times(1)).findAllByItem(item);
-        verify(bookingRepository, times(1)).
-                findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(any(), any(), any());
-        verify(bookingRepository, times(1)).
-                findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(any(), any(), any());
+        verify(bookingRepository, times(1))
+                .findFirstBookingByItemIdAndStartDateBeforeAndStatusNotOrderByStartDateDesc(any(), any(), any());
+        verify(bookingRepository, times(1))
+                .findFirstBookingByItemIdAndStartDateAfterAndStatusNotOrderByStartDate(any(), any(), any());
     }
 
     @Test
