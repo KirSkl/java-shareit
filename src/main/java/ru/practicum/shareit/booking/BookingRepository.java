@@ -22,12 +22,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByBookerIdAndStatusOrderByStartDateDesc(Long bookerId, BookingStatus state, Pageable page);
 
-    List<Booking> findAllByItemOwnerIdOrderByStartDateDesc(Long bookerId, Pageable page);
+    List<Booking> findAllByItemOwnerIdOrderByStartDateDesc(Long ownerId, Pageable page);
 
     List<Booking> findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
-            Long bookerId, LocalDateTime now, LocalDateTime now1, Pageable page);
+            Long ownerId, LocalDateTime now, LocalDateTime now1, Pageable page);
 
-    List<Booking> findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(Long bookerId, LocalDateTime now, Pageable page);
+    List<Booking> findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(Long ownerId, LocalDateTime now, Pageable page);
 
     List<Booking> findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(Long bookerId, LocalDateTime now, Pageable page);
 
