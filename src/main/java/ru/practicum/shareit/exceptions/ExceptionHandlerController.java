@@ -14,13 +14,6 @@ import java.util.NoSuchElementException;
 public class ExceptionHandlerController {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleExceptionDuplicateEmail(EmailAlreadyIsUsed e) {
-        return Map.of("error", "У пользователей не может быть одинаковый адрес Email",
-                "errorMessage", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(NotFoundException e) {
         return Map.of("error:", "Не найдено", "errorMessage", e.getMessage());

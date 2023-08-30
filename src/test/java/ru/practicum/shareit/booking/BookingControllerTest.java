@@ -14,6 +14,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.common.Constants;
 import ru.practicum.shareit.common.Validator;
+import ru.practicum.shareit.exceptions.InvalidBookingDates;
 import ru.practicum.shareit.exceptions.InvalidPageParamsException;
 import ru.practicum.shareit.exceptions.ValidationIdException;
 import ru.practicum.shareit.item.model.Item;
@@ -84,6 +85,26 @@ public class BookingControllerTest {
                 .getContentAsString();
 
         assertEquals(mapper.writeValueAsString(bookingDtoResponse), result);
+    }
+
+    @SneakyThrows
+    @Test
+    void testCreateBookingInvalidDatesThrown() {
+        doThrow(new InvalidBookingDates("Неверные даты бронирования")).when(validator).
+                validateBookingDto(bookingDtoRequest);
+
+        var result = mvc.perform(post("/bookings")
+                        .header(Constants.USER_HEADER, userId)
+                        .content(mapper.writeValueAsString(bookingDtoRequest))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+                /*.andReturn()
+                .getResponse()
+                .getContentAsString();*/
+
+        //assertEquals(mapper.writeValueAsString(bookingDtoResponse), result);
     }
 
     @SneakyThrows

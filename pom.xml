@@ -143,6 +143,9 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+						<excludes>
+						    <exclude>**/common/Validator.class</exclude>
+						</excludes>
 					</configuration>
 					<executions>
 						<execution>
