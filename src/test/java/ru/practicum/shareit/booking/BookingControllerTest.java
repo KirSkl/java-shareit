@@ -100,11 +100,6 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
-                /*.andReturn()
-                .getResponse()
-                .getContentAsString();*/
-
-        //assertEquals(mapper.writeValueAsString(bookingDtoResponse), result);
     }
 
     @SneakyThrows
@@ -195,7 +190,7 @@ public class BookingControllerTest {
     @SneakyThrows
     @Test
     void testGetAllBookingsOk() {
-        when(service.getAllBookings(userId, state, from, size)).thenReturn(List.of(bookingDtoResponse));
+        when(service.getAllBookings(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(List.of(bookingDtoResponse));
 
         var result = mvc.perform(get("/bookings")
                         .header(Constants.USER_HEADER, userId)
@@ -215,7 +210,7 @@ public class BookingControllerTest {
     @SneakyThrows
     @Test
     void testGetAllBookingsWithoutParamsOk() {
-        when(service.getAllBookings(userId, state, from, size)).thenReturn(List.of(bookingDtoResponse));
+        when(service.getAllBookings(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(List.of(bookingDtoResponse));
 
         var result = mvc.perform(get("/bookings")
                         .header(Constants.USER_HEADER, userId)
@@ -232,7 +227,7 @@ public class BookingControllerTest {
     @SneakyThrows
     @Test
     void testGetAllItemBookingsOk() {
-        when(service.getAllItemBookings(userId, state, from, size)).thenReturn(List.of(bookingDtoResponse));
+        when(service.getAllItemBookings(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(List.of(bookingDtoResponse));
 
         var result = mvc.perform(get("/bookings/owner")
                         .header(Constants.USER_HEADER, userId)

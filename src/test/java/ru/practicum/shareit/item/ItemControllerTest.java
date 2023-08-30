@@ -172,7 +172,7 @@ public class ItemControllerTest {
     @SneakyThrows
     @Test
     void testFindAllMyItemsOk() {
-        when(service.findAllMyItems(userId, from, size)).thenReturn(List.of(itemDtoResp));
+        when(service.findAllMyItems(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemDtoResp));
 
         mvc.perform(get("/items")
                         .header(Constants.USER_HEADER, userId)
@@ -191,7 +191,7 @@ public class ItemControllerTest {
     @SneakyThrows
     @Test
     void testFindAllMyItemsWithoutParamsOk() {
-        when(service.findAllMyItems(userId, from, size)).thenReturn(List.of(itemDtoResp));
+        when(service.findAllMyItems(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemDtoResp));
 
         mvc.perform(get("/items")
                         .header(Constants.USER_HEADER, userId)
@@ -208,7 +208,7 @@ public class ItemControllerTest {
     @SneakyThrows
     @Test
     void testSearchOk() {
-        when(service.search(text, from, size)).thenReturn(List.of(itemDtoResp));
+        when(service.search(anyString(), anyInt(), anyInt())).thenReturn(List.of(itemDtoResp));
 
         mvc.perform(get("/items/search")
                         .param("text", text)

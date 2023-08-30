@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Constants;
+import ru.practicum.shareit.common.PaginationUtil;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
@@ -62,6 +63,7 @@ public class ItemRequestController {
         validator.validatePageParams(from, size);
         validator.validateId(userId);
         validator.checkIsUserExists(userId);
-        return itemRequestService.getAll(from, size, userId);
+        int page = PaginationUtil.positionToPage(from, size);
+        return itemRequestService.getAll(page, size, userId);
     }
 }
