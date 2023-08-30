@@ -90,8 +90,8 @@ public class BookingControllerTest {
     @SneakyThrows
     @Test
     void testCreateBookingInvalidDatesThrown() {
-        doThrow(new InvalidBookingDates("Неверные даты бронирования")).when(validator).
-                validateBookingDto(bookingDtoRequest);
+        doThrow(new InvalidBookingDates("Неверные даты бронирования")).when(validator)
+                .validateBookingDto(bookingDtoRequest);
 
         var result = mvc.perform(post("/bookings")
                         .header(Constants.USER_HEADER, userId)
