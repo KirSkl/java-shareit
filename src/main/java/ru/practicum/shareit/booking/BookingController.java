@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.common.Constants;
+import ru.practicum.shareit.common.PaginationUtil;
 import ru.practicum.shareit.common.Validator;
 
 import javax.validation.Valid;
@@ -58,7 +59,8 @@ public class BookingController {
                         "начиная с бронирования %s, по %s бронирований на странице", state, userId, from, size));
         validator.validateId(userId);
         validator.validatePageParams(from, size);
-        return bookingService.getAllBookings(userId, state, from, size);
+        int page = PaginationUtil.positionToPage(from, size);
+        return bookingService.getAllBookings(userId, state, page, size);
     }
 
     @GetMapping("/owner")
@@ -70,6 +72,7 @@ public class BookingController {
                         "начиная с бронирования %s, по %s бронирований на странице", state, userId, from, size));
         validator.validateId(userId);
         validator.validatePageParams(from, size);
-        return bookingService.getAllItemBookings(userId, state, from, size);
+        int page = PaginationUtil.positionToPage(from, size);
+        return bookingService.getAllItemBookings(userId, state, page, size);
     }
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Constants;
+import ru.practicum.shareit.common.PaginationUtil;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
@@ -57,7 +58,8 @@ public class ItemController {
         validator.validateId(userId);
         validator.validatePageParams(from, size);
         validator.checkIsUserExists(userId);
-        return itemService.findAllMyItems(userId, from, size);
+        int page = PaginationUtil.positionToPage(from, size);
+        return itemService.findAllMyItems(userId, page, size);
     }
 
     @GetMapping("/search")
@@ -67,7 +69,8 @@ public class ItemController {
                 "Получен запрос GET /items/search на поиск вещей, содержащих в названии или описании %s, начиная с " +
                         "вещи %s, по %s вещей на странице", text, from, size));
         validator.validatePageParams(from, size);
-        return itemService.search(text, from, size);
+        int page = PaginationUtil.positionToPage(from, size);
+        return itemService.search(text, page, size);
     }
 
     @PostMapping("/{itemId}/comment")

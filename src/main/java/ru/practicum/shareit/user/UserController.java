@@ -50,5 +50,4 @@ public class UserController {
         validator.validateId(userId);
         userService.deleteUser(userId);
     }
-
 }

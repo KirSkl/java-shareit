@@ -182,7 +182,7 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void testGetAllRequestsOk() {
-        when(service.getAll(from, size, userId)).thenReturn(List.of(itemRequestDtoResponseWithAnswers));
+        when(service.getAll(anyInt(), anyInt(), anyLong())).thenReturn(List.of(itemRequestDtoResponseWithAnswers));
 
         mvc.perform(get("/requests/all")
                         .header(Constants.USER_HEADER, userId)
@@ -207,7 +207,7 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void testGetAllRequestsWithoutParamsOk() {
-        when(service.getAll(from, size, userId)).thenReturn(List.of(itemRequestDtoResponseWithAnswers));
+        when(service.getAll(anyInt(), anyInt(), anyLong())).thenReturn(List.of(itemRequestDtoResponseWithAnswers));
 
         mvc.perform(get("/requests/all")
                         .header(Constants.USER_HEADER, userId)
