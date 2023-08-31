@@ -92,19 +92,18 @@ public class UserServiceImplementTest {
 
     @Test
     void testDeleteUserOk() {
-        when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.deleteByIdAndReturnCount(anyLong())).thenReturn(1);
 
         userService.deleteUser(user.getId());
 
-        Mockito.verify(userRepository, Mockito.times(1)).deleteById(user.getId());
+        Mockito.verify(userRepository, Mockito.times(1)).deleteByIdAndReturnCount(user.getId());
     }
 
     @Test
     void testDeleteUserThrownNotFound() {
-        when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        when(userRepository.deleteByIdAndReturnCount(anyLong())).thenReturn(0);
 
-        assertThrows(NotFoundException.class, () -> userService.deleteUser(Mockito.anyLong()));
-        Mockito.verify(userRepository, Mockito.never()).deleteById(Mockito.anyLong());
+        assertThrows(NotFoundException.class, () -> userService.deleteUser(anyLong()));
     }
 
     @Test
