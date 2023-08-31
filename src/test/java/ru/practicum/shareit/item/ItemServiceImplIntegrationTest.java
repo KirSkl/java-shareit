@@ -22,11 +22,11 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemServiceImplIntegrationTest {
-    private final EntityManager em;
-    private final ItemService service;
-    private final UserService userService;
-    private Long userId;
-    private ItemDto itemDto;
+    final EntityManager em;
+    final ItemService service;
+    final UserService userService;
+    Long userId;
+    ItemDto itemDto;
 
     @BeforeEach
     void loadInitial() {
@@ -53,7 +53,7 @@ public class ItemServiceImplIntegrationTest {
     }
 
     @Test
-    public void findAllMyItemsTest() {
+    void findAllMyItemsTest() {
         ItemDto itemSavedDto = service.addItem(userId, itemDto);
         int from = 0;
         int size = 10;

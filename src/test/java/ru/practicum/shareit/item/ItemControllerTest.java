@@ -31,23 +31,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemController.class)
 public class ItemControllerTest {
     @Autowired
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
     @MockBean
-    private ItemService service;
+    ItemService service;
     @MockBean
-    private Validator validator;
+    Validator validator;
 
-    private ItemDto itemDtoReq;
-    private ItemDto itemDtoResp;
-    private CommentDtoResponse commentDtoResponse;
-    private Long itemId;
-    private Long userId;
-    private int from;
-    private int size;
-    private CommentDtoRequest commentDtoRequest;
-    private String text;
+    ItemDto itemDtoReq;
+    ItemDto itemDtoResp;
+    CommentDtoResponse commentDtoResponse;
+    Long itemId;
+    Long userId;
+    int from;
+    int size;
+    CommentDtoRequest commentDtoRequest;
+    String text;
 
 
     @BeforeEach

@@ -20,10 +20,10 @@ public class ItemRequestRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    private User user;
-    private User userAnother;
-    private ItemRequest itemRequest;
-    private ItemRequest itemRequest2;
+    User user;
+    User userAnother;
+    ItemRequest itemRequest;
+    ItemRequest itemRequest2;
 
     @BeforeEach
     void loadInitial() {

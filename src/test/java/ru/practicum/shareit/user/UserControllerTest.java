@@ -28,17 +28,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
     @Autowired
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
     @MockBean
-    private UserService service;
+    UserService service;
     @MockBean
-    private Validator validator;
+    Validator validator;
 
-    private Long userId;
-    private User user;
-    private UserDto userDto;
+    Long userId;
+    User user;
+    UserDto userDto;
 
     @BeforeEach
     void loadInitial() {

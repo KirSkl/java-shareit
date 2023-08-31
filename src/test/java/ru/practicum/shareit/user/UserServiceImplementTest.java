@@ -23,13 +23,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceImplementTest {
     @Mock
-    private UserRepository userRepository;
+    UserRepository userRepository;
     @InjectMocks
-    private UserServiceImpl userService;
-    private UserDto userDto;
-    private UserDto userDtoUpdate;
-    private User user;
-    private User userUpdate;
+    UserServiceImpl userService;
+    UserDto userDto;
+    UserDto userDtoUpdate;
+    User user;
+    User userUpdate;
 
     @BeforeEach
     void loadInitial() {

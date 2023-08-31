@@ -28,15 +28,15 @@ public class BookingRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
-    private Booking bookingPastItem;
-    private Booking bookingCurrentItem2;
-    private Booking bookingFutureItem2;
-    private Booking bookingCurrentNextItem;
-    private Item item;
-    private Item item2;
-    private User user;
-    private User user2;
-    private Pageable page;
+    Booking bookingPastItem;
+    Booking bookingCurrentItem2;
+    Booking bookingFutureItem2;
+    Booking bookingCurrentNextItem;
+    Item item;
+    Item item2;
+    User user;
+    User user2;
+    Pageable page;
 
     @BeforeEach
     void loadInitial() {

@@ -20,7 +20,7 @@ public class CommentRepositoryTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    private CommentRepository repository;
+    CommentRepository repository;
 
     @Test
     void testFindAllByItemOk() {

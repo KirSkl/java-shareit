@@ -32,24 +32,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = BookingController.class)
 public class BookingControllerTest {
     @Autowired
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
     @MockBean
-    private BookingService service;
+    BookingService service;
     @MockBean
-    private Validator validator;
+    Validator validator;
 
-    private Long userId;
-    private BookingDtoRequest bookingDtoRequest;
-    private BookingDtoResponse bookingDtoResponse;
-    private User user;
-    private Item item;
-    private Long bookingId;
-    private Boolean approved;
-    private String state;
-    private int from;
-    private int size;
+    Long userId;
+    BookingDtoRequest bookingDtoRequest;
+    BookingDtoResponse bookingDtoResponse;
+    User user;
+    Item item;
+    Long bookingId;
+    Boolean approved;
+    String state;
+    int from;
+    int size;
 
     @BeforeEach
     void loadInitial() {

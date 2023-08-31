@@ -35,32 +35,32 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceImplTest {
-    private final int from = 0;
-    private final int size = 10;
+    final int from = 0;
+    final int size = 10;
     @Mock
-    private ItemRepository itemRepository;
+    ItemRepository itemRepository;
     @Mock
-    private CommentRepository commentRepository;
+    CommentRepository commentRepository;
     @Mock
-    private BookingRepository bookingRepository;
+    BookingRepository bookingRepository;
     @Mock
-    private UserRepository userRepository;
+    UserRepository userRepository;
     @InjectMocks
-    private ItemServiceImpl itemService;
-    private Item item;
-    private Item itemAnotherOwner;
-    private ItemDto itemDto;
-    private ItemDto itemAnotherOwnerDto;
-    private ItemDto itemDtoWithoutBookings;
-    private ItemDto itemDtoWithoutBookingsAndComments;
-    private Long userId;
-    private User user;
-    private Comment comment;
-    private Comment commentWithoutId;
-    private CommentDtoRequest commentDtoRequest;
-    private CommentDtoResponse commentDtoResponse;
-    private Booking booking;
-    private Booking bookingAnother;
+    ItemServiceImpl itemService;
+    Item item;
+    Item itemAnotherOwner;
+    ItemDto itemDto;
+    ItemDto itemAnotherOwnerDto;
+    ItemDto itemDtoWithoutBookings;
+    ItemDto itemDtoWithoutBookingsAndComments;
+    Long userId;
+    User user;
+    Comment comment;
+    Comment commentWithoutId;
+    CommentDtoRequest commentDtoRequest;
+    CommentDtoResponse commentDtoResponse;
+    Booking booking;
+    Booking bookingAnother;
 
     @BeforeEach
     void loadInitial() {

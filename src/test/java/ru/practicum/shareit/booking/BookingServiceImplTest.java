@@ -29,30 +29,30 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceImplTest {
-    private final int from = 0;
-    private final int size = 10;
+    final int from = 0;
+    final int size = 10;
     @Mock
     UserRepository userRepository;
     @InjectMocks
     BookingServiceImpl bookingService;
     @Mock
-    private ItemRepository itemRepository;
+    ItemRepository itemRepository;
     @Mock
-    private BookingRepository bookingRepository;
-    private Item item;
-    private Item itemAnotherOwner;
-    private Long userId;
-    private User user;
-    private Booking booking;
-    private BookingDtoRequest bookingDtoRequest;
-    private BookingDtoResponse bookingDtoResponse;
-    private String stateAll;
-    private String stateCurrent;
-    private String statePast;
-    private String stateFuture;
-    private String stateWaiting;
-    private String stateRejected;
-    private String stateWrong;
+    BookingRepository bookingRepository;
+    Item item;
+    Item itemAnotherOwner;
+    Long userId;
+    User user;
+    Booking booking;
+    BookingDtoRequest bookingDtoRequest;
+    BookingDtoResponse bookingDtoResponse;
+    String stateAll;
+    String stateCurrent;
+    String statePast;
+    String stateFuture;
+    String stateWaiting;
+    String stateRejected;
+    String stateWrong;
 
     @BeforeEach
     void loadInitial() {

@@ -8,8 +8,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -27,14 +27,14 @@ public class ItemRepositoryTest {
     @Autowired
     ItemRequestRepository itemRequestRepository;
 
-    private Item item;
-    private Item itemAnother;
-    private Item itemAnotherOwner;
-    private Pageable page;
-    private User user;
-    private User userAnother;
-    private ItemRequest itemRequest;
-    private ItemRequest itemRequestAnother;
+    Item item;
+    Item itemAnother;
+    Item itemAnotherOwner;
+    Pageable page;
+    User user;
+    User userAnother;
+    ItemRequest itemRequest;
+    ItemRequest itemRequestAnother;
 
     @BeforeEach
     void loadInitial() {

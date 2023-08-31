@@ -19,8 +19,8 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceImplIntegrationTest {
-    private final EntityManager em;
-    private final UserService service;
+     final EntityManager em;
+     final UserService service;
 
     @Test
     void saveUser() {
@@ -38,7 +38,7 @@ public class UserServiceImplIntegrationTest {
     }
 
     @Test
-    public void findUserByIdTest() {
+    void findUserByIdTest() {
         UserDto userSavedDto = service.createUser(makeUser("Пётр","some@email.com"));
         UserDto userDto = service.getUser(userSavedDto.getId());
         assertThat(userDto.getId(), equalTo(userSavedDto.getId()));
@@ -46,7 +46,7 @@ public class UserServiceImplIntegrationTest {
         assertThat(userDto.getEmail(), equalTo(userSavedDto.getEmail()));
     }
 
-    private User makeUser(String name, String email) {
+     User makeUser(String name, String email) {
         User user = new User();
         user.setName(name);
         user.setEmail(email);

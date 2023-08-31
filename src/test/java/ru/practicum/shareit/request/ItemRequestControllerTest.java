@@ -34,22 +34,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemRequestController.class)
 public class ItemRequestControllerTest {
     @Autowired
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
     @Autowired
-    private MockMvc mvc;
+    MockMvc mvc;
     @MockBean
-    private ItemRequestService service;
+    ItemRequestService service;
     @MockBean
-    private Validator validator;
+    Validator validator;
 
-    private Long userId;
-    private ItemRequestDto itemRequestDto;
-    private ItemRequestDtoResponse itemRequestDtoResponse;
-    private ItemRequestDtoResponseWithAnswers itemRequestDtoResponseWithAnswers;
-    private ItemRequestAnswerDto itemRequestAnswerDto;
-    private Long requestId;
-    private int from;
-    private int size;
+    Long userId;
+    ItemRequestDto itemRequestDto;
+    ItemRequestDtoResponse itemRequestDtoResponse;
+    ItemRequestDtoResponseWithAnswers itemRequestDtoResponseWithAnswers;
+    ItemRequestAnswerDto itemRequestAnswerDto;
+    Long requestId;
+    int from;
+    int size;
 
     @BeforeEach
     void loadInitial() {
