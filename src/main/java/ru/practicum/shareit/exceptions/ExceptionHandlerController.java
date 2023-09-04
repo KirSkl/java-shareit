@@ -14,13 +14,6 @@ import java.util.NoSuchElementException;
 public class ExceptionHandlerController {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleExceptionDuplicateEmail(EmailAlreadyIsUsed e) {
-        return Map.of("error", "У пользователей не может быть одинаковый адрес Email",
-                "errorMessage", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(NotFoundException e) {
         return Map.of("error:", "Не найдено", "errorMessage", e.getMessage());
@@ -30,6 +23,13 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleNumberFormatException(NumberFormatException e) {
         return Map.of("error", "ID должен быть указан в числовом формате",
+                "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInvalidPageParamsException(InvalidPageParamsException e) {
+        return Map.of("error", "Параметры пагинации не верны",
                 "errorMessage", e.getMessage());
     }
 

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
@@ -66,28 +68,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getAllBookings(Long userId, String state) {
+    public List<BookingDtoResponse> getAllBookings(Long userId, String state, int from, int size) {
         checkUserExistsAndGet(userId);
+        Pageable page = PageRequest.of(from, size);
         try {
             switch (BookingStates.valueOf(state)) {
                 case ALL:
-                    return bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId).stream()
+                    return bookingRepository.findAllByBookerIdOrderByStartDateDesc(userId, page).stream()
                             .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
                 case CURRENT:
                     return bookingRepository.findAllByBookerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
-                                    userId, LocalDateTime.now(), LocalDateTime.now()).stream()
+                                    userId, LocalDateTime.now(), LocalDateTime.now(), page).stream()
                             .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
                 case PAST:
                     return bookingRepository.findAllByBookerIdAndEndDateBeforeOrderByStartDateDesc(
-                                    userId, LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                                    userId, LocalDateTime.now(), page).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
                 case FUTURE:
                     return bookingRepository.findAllByBookerIdAndStartDateAfterOrderByStartDateDesc(
-                                    userId, LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                                    userId, LocalDateTime.now(), page).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
                 default:
                     return bookingRepository.findAllByBookerIdAndStatusOrderByStartDateDesc(userId,
-                                    BookingStatus.valueOf(state)).stream()
+                                    BookingStatus.valueOf(state), page).stream()
                             .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
             }
         } catch (IllegalArgumentException e) {
@@ -96,28 +99,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoResponse> getAllItemBookings(Long userId, String state) {
+    public List<BookingDtoResponse> getAllItemBookings(Long userId, String state, int from, int size) {
         checkUserExistsAndGet(userId);
+        Pageable page = PageRequest.of(from, size);
         try {
             switch (BookingStates.valueOf(state)) {
                 case ALL:
-                    return bookingRepository.findAllByItemOwnerIdOrderByStartDateDesc(userId).stream()
+                    return bookingRepository.findAllByItemOwnerIdOrderByStartDateDesc(userId, page).stream()
                             .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
                 case CURRENT:
                     return bookingRepository.findAllByItemOwnerIdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
-                                    userId, LocalDateTime.now(), LocalDateTime.now()).stream()
+                                    userId, LocalDateTime.now(), LocalDateTime.now(), page).stream()
                                     .map(BookingMapper::toBookingDtoResponse).collect(Collectors.toList());
                 case PAST:
                     return bookingRepository.findAllByItemOwnerIdAndEndDateBeforeOrderByStartDateDesc(userId,
-                                    LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                                    LocalDateTime.now(), page).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
                 case FUTURE:
                     return bookingRepository.findAllByItemOwnerIdAndStartDateAfterOrderByStartDateDesc(userId,
-                                    LocalDateTime.now()).stream().map(BookingMapper::toBookingDtoResponse)
+                                    LocalDateTime.now(), page).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
                 default:
                     return bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDateDesc(userId,
-                                    BookingStatus.valueOf(state)).stream().map(BookingMapper::toBookingDtoResponse)
+                                    BookingStatus.valueOf(state), page).stream().map(BookingMapper::toBookingDtoResponse)
                             .collect(Collectors.toList());
             }
         } catch (IllegalArgumentException e) {

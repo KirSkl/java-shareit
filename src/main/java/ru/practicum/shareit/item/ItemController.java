@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Constants;
+import ru.practicum.shareit.common.PaginationUtil;
 import ru.practicum.shareit.common.Validator;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
@@ -49,18 +50,27 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findAllMyItems(@RequestHeader(Constants.USER_HEADER) Long userId) {
-        log.info(String.format("Получен запрос GET /items на просмотр списка вещей пользователя с id=%s", userId));
+    public List<ItemDto> findAllMyItems(@RequestHeader(Constants.USER_HEADER) Long userId, @RequestParam(
+            defaultValue = Constants.DEFAULT_FROM) int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
+            int size) {
+        log.info(String.format("Получен запрос GET /items на просмотр списка вещей пользователя с id=%s, начиная с " +
+                "вещи %s, по %s вещей на странице", userId, from, size));
         validator.validateId(userId);
+        validator.validatePageParams(from, size);
         validator.checkIsUserExists(userId);
-        return itemService.findAllMyItems(userId);
+        int page = PaginationUtil.positionToPage(from, size);
+        return itemService.findAllMyItems(userId, page, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
+    public List<ItemDto> search(@RequestParam String text, @RequestParam(defaultValue = Constants.DEFAULT_FROM)
+    int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
         log.info(String.format(
-                "Получен запрос GET /items/search на поиск вещей, соодержащих в названии или описании %s", text));
-        return itemService.search(text);
+                "Получен запрос GET /items/search на поиск вещей, содержащих в названии или описании %s, начиная с " +
+                        "вещи %s, по %s вещей на странице", text, from, size));
+        validator.validatePageParams(from, size);
+        int page = PaginationUtil.positionToPage(from, size);
+        return itemService.search(text, page, size);
     }
 
     @PostMapping("/{itemId}/comment")
