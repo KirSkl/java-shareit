@@ -52,7 +52,6 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam String text, @RequestParam(defaultValue = Constants.DEFAULT_FROM)
                                 int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
-        validator.validatePageParams(from, size);
         int page = PaginationUtil.positionToPage(from, size);
         return itemService.search(text, page, size);
     }
