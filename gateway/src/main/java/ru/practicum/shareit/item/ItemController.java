@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Constants;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
@@ -11,11 +12,14 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.Collection;
+import java.util.Collections;
 
 @RestController
 @Slf4j
 @RequestMapping("/items")
 @AllArgsConstructor
+@Validated
 public class ItemController {
     private final ItemClient itemClient;
 
@@ -28,8 +32,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> editItem(@Positive @RequestHeader(Constants.USER_HEADER) Long userId,
-                                           @Positive @PathVariable Long itemId,
-                                           @Valid @RequestBody ItemDto itemDto) {
+                                           @Positive @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
         log.info(String.format("Получен запрос PATCH /items/itemId=%s на редактирование данных вещи с названием %s",
                 userId, itemDto.getName()));
         return itemClient.editItem(userId, itemId, itemDto);
@@ -62,7 +65,7 @@ public class ItemController {
                 "Получен запрос GET /items/search на поиск вещей, содержащих в названии или описании %s, начиная с " +
                         "вещи %s, по %s вещей на странице", text, from, size));
         if (text.isBlank() || text.isEmpty()) {
-            return ResponseEntity.ok().body("{\"[]\"}");
+            return ResponseEntity.ok().body(Collections.emptyList());
         }
         return itemClient.search(text, userId, from, size);
     }
