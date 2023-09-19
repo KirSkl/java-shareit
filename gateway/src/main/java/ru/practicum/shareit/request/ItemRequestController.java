@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.Constants;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -16,6 +17,7 @@ import javax.validation.constraints.PositiveOrZero;
 @AllArgsConstructor
 @Slf4j
 @RequestMapping(path = "/requests")
+@Validated
 public class ItemRequestController {
     private final RequestClient requestClient;
 
@@ -45,8 +47,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllRequests(
-            @RequestParam(defaultValue = Constants.DEFAULT_FROM) @PositiveOrZero int from,
-            @RequestParam(defaultValue = Constants.DEFAULT_SIZE) @Positive int size,
+            @PositiveOrZero @RequestParam(defaultValue = Constants.DEFAULT_FROM) int from,
+            @Positive @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size,
             @RequestHeader(Constants.USER_HEADER) Long userId) {
         log.info(String.format(
                 "Получен запрос GET /requests/all от пользователя = %s на получение списка запросов других " +

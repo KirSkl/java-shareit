@@ -47,7 +47,8 @@ public class BookingController {
                                               @RequestParam(name = "state", defaultValue = "all") String stateParam,
                                               @PositiveOrZero @RequestParam(name = "from", defaultValue = "0")
                                               Integer from,
-                                              @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                              @Positive @RequestParam(name = "size", defaultValue = "10")
+                                              Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new UnsupportedBookingStateException("Unknown state: " + stateParam));
         log.info(String.format("Получен запрос GET/bookings на получение %s бронирований пользователя с id = %s, " +
@@ -65,7 +66,8 @@ public class BookingController {
 
     @GetMapping("/owner")
     public ResponseEntity<Object> getAllItemBookings(@Positive @RequestHeader(Constants.USER_HEADER) Long userId,
-                                                     @RequestParam(defaultValue = "ALL") String stateParam,
+                                                     @RequestParam(name = "state", defaultValue = "ALL")
+                                                     String stateParam,
                                                      @RequestParam(defaultValue = Constants.DEFAULT_FROM)
                                                      @PositiveOrZero int from,
                                                      @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
