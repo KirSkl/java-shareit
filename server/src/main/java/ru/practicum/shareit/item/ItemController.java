@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -44,14 +43,14 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> findAllMyItems(@RequestHeader(Constants.USER_HEADER) Long userId, @RequestParam(
             defaultValue = Constants.DEFAULT_FROM) int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
-            int size) {
+                                        int size) {
         int page = PaginationUtil.positionToPage(from, size);
         return itemService.findAllMyItems(userId, page, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam String text, @RequestParam(defaultValue = Constants.DEFAULT_FROM)
-                                int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
+    int from, @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size) {
         int page = PaginationUtil.positionToPage(from, size);
         return itemService.search(text, page, size);
     }

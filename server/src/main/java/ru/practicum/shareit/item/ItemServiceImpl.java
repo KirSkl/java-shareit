@@ -18,7 +18,6 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,8 +67,8 @@ public class ItemServiceImpl implements ItemService {
                     .collect(Collectors.toList())), userId);
         }
         return ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
-                    .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
-                    .collect(Collectors.toList()));
+                .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
+                .collect(Collectors.toList()));
     }
 
 
@@ -78,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
         var user = userRepository.findById(userId).orElseThrow(()
                 -> new NotFoundException("Пользователь на найден"));
         return itemRepository.findItemsByOwnerIdOrderById(userId, PageRequest.of(from, size)).stream()
-                        .map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
+                .map(item -> ItemMapper.toItemDto(item, commentRepository.findAllByItem(item).stream()
                         .map(comment -> CommentMapper.toCommentDtoResponse(comment, comment.getAuthor().getName()))
                         .collect(Collectors.toList()))).map(itemDto -> addBookings(itemDto, userId))
                 .collect(Collectors.toList());
