@@ -13,11 +13,11 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import java.util.Map;
 
 @Service
-public class RequestClient extends BaseClient {
+public class ItemRequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";
 
     @Autowired
-    public RequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
+    public ItemRequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
