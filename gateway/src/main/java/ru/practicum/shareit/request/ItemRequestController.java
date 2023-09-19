@@ -1,6 +1,6 @@
 package ru.practicum.shareit.request;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +14,7 @@ import javax.validation.constraints.PositiveOrZero;
 
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping(path = "/requests")
 @Validated
