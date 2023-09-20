@@ -43,11 +43,11 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getBookings(@Positive @RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getBookings(@Positive @RequestHeader(Constants.USER_HEADER) long userId,
                                               @RequestParam(name = "state", defaultValue = "all") String stateParam,
-                                              @PositiveOrZero @RequestParam(name = "from", defaultValue = "0")
+                                              @PositiveOrZero @RequestParam(defaultValue = Constants.DEFAULT_FROM)
                                               Integer from,
-                                              @Positive @RequestParam(name = "size", defaultValue = "10")
+                                              @Positive @RequestParam(defaultValue = Constants.DEFAULT_SIZE)
                                               Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new UnsupportedBookingStateException("Unknown state: " + stateParam));
@@ -57,7 +57,7 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> getBooking(@Positive @RequestHeader("X-Sharer-User-Id") long userId,
+    public ResponseEntity<Object> getBooking(@Positive @RequestHeader(Constants.USER_HEADER) long userId,
                                              @Positive @PathVariable Long bookingId) {
         log.info(String.format("Получен запрос GET/bookingId = %s на получение информации о бронировании от " +
                 "пользователя id = %s", bookingId, userId));
